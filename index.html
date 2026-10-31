@@ -19,52 +19,39 @@
       <div class="logo-wrapper">
         <svg class="app-logo-svg" viewBox="0 0 340 72" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="PDF Buddy">
           <defs>
-            <linearGradient id="buddyGrad1" x1="6" y1="6" x2="62" y2="62" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stop-color="#4ea8fd" />
-              <stop offset="100%" stop-color="#2181ee" />
-            </linearGradient>
-            <linearGradient id="buddyGrad2" x1="16" y1="8" x2="70" y2="62" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stop-color="#ffffff" />
-              <stop offset="100%" stop-color="#eff7fe" />
-            </linearGradient>
-            <!-- Soft Sky Blue Accent for Logo Back Page -->
-            <linearGradient id="skyBackPage" x1="6" y1="8" x2="48" y2="58" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stop-color="#7ec1fc" />
-              <stop offset="100%" stop-color="#3b9df8" />
-            </linearGradient>
             <filter id="buddyGlow" x="0" y="0" width="85" height="85" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-              <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#247cd9" flood-opacity="0.14" />
+              <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#152433" flood-opacity="0.08" />
             </filter>
           </defs>
 
-          <!-- Buddy Icon: Friendly Overlapping Document Pages (Pure Sky Blue & White) -->
+          <!-- Buddy Icon: Friendly Overlapping Document Pages (Solid Sky Blue & White) -->
           <g transform="translate(4, 4)">
-            <!-- Back tilted page with soft sky blue accent -->
-            <rect x="6" y="8" width="42" height="50" rx="10" fill="url(#skyBackPage)" opacity="0.32" transform="rotate(-7 27 33)" />
+            <!-- Back tilted page with solid sky blue accent -->
+            <rect x="6" y="8" width="42" height="50" rx="10" fill="#bae0fd" transform="rotate(-7 27 33)" />
             
             <!-- Front document page with soft shadow -->
             <g filter="url(#buddyGlow)">
-              <rect x="15" y="7" width="44" height="52" rx="10" fill="url(#buddyGrad2)" />
+              <rect x="15" y="7" width="44" height="52" rx="10" fill="#ffffff" />
             </g>
             
-            <!-- Front page clean sky blue border -->
-            <rect x="15" y="7" width="44" height="52" rx="10" stroke="url(#buddyGrad1)" stroke-width="1.3" />
+            <!-- Front page clean solid sky blue border -->
+            <rect x="15" y="7" width="44" height="52" rx="10" stroke="#2181ee" stroke-width="1.6" />
             
             <!-- Folded dog-ear corner -->
-            <path d="M44 7V17.5C44 18.6 44.9 19.5 46 19.5H59" stroke="url(#buddyGrad1)" stroke-width="1.3" stroke-linecap="round" />
+            <path d="M44 7V17.5C44 18.6 44.9 19.5 46 19.5H59" stroke="#2181ee" stroke-width="1.6" stroke-linecap="round" />
             
             <!-- Friendly Buddy Face (Wink & Smile) -->
-            <circle cx="29" cy="30" r="2.3" fill="#2585ee" />
-            <circle cx="45" cy="30" r="2.3" fill="#2585ee" />
-            <path d="M31 39.5C34 43 40 43 43 39.5" stroke="#2585ee" stroke-width="1.8" stroke-linecap="round" />
+            <circle cx="29" cy="30" r="2.3" fill="#2181ee" />
+            <circle cx="45" cy="30" r="2.3" fill="#2181ee" />
+            <path d="M31 39.5C34 43 40 43 43 39.5" stroke="#2181ee" stroke-width="1.8" stroke-linecap="round" />
           </g>
 
-          <!-- Vector Wordmark Typography: "PDF" in slate, "Buddy" in Sky Blue -->
-          <text x="80" y="47" font-family="'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-weight="300" font-size="39" fill="#122b46" letter-spacing="-0.02em">
-            PDF <tspan font-weight="600" fill="#2585ee">Buddy</tspan>
+          <!-- Vector Wordmark Typography: "PDF" in deep slate, "Buddy" in Solid Sky Blue -->
+          <text x="80" y="47" font-family="'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-weight="300" font-size="39" fill="#152433" letter-spacing="-0.02em">
+            PDF <tspan font-weight="600" fill="#2181ee">Buddy</tspan>
           </text>
-          <!-- Soft Sky Blue Accent Dot -->
-          <circle cx="298" cy="42" r="4.8" fill="#4ea8fd" />
+          <!-- Solid Sky Blue Accent Dot -->
+          <circle cx="298" cy="42" r="4.8" fill="#2181ee" />
         </svg>
       </div>
       <p class="app-subtitle">Easily turn your screenshots and saved pictures into a single document</p>
