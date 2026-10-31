@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>PDF Buddy | Images to PDF</title>
+  <!-- Thin, Rounded Sans-Serif Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@200;300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📄</text></svg>" />
+</head>
+<body>
+  <div class="page-wrapper">
+    <!-- Header with Large Vector Logo -->
+    <header class="app-header">
+      <div class="logo-wrapper">
+        <svg class="app-logo-svg" viewBox="0 0 340 72" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="PDF Buddy">
+          <defs>
+            <linearGradient id="buddyGrad1" x1="6" y1="6" x2="62" y2="62" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#4ea8fd" />
+              <stop offset="100%" stop-color="#2181ee" />
+            </linearGradient>
+            <linearGradient id="buddyGrad2" x1="16" y1="8" x2="70" y2="62" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#ffffff" />
+              <stop offset="100%" stop-color="#eff7fe" />
+            </linearGradient>
+            <!-- Soft Sky Blue Accent for Logo Back Page -->
+            <linearGradient id="skyBackPage" x1="6" y1="8" x2="48" y2="58" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#7ec1fc" />
+              <stop offset="100%" stop-color="#3b9df8" />
+            </linearGradient>
+            <filter id="buddyGlow" x="0" y="0" width="85" height="85" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+              <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#247cd9" flood-opacity="0.14" />
+            </filter>
+          </defs>
+
+          <!-- Buddy Icon: Friendly Overlapping Document Pages (Pure Sky Blue & White) -->
+          <g transform="translate(4, 4)">
+            <!-- Back tilted page with soft sky blue accent -->
+            <rect x="6" y="8" width="42" height="50" rx="10" fill="url(#skyBackPage)" opacity="0.32" transform="rotate(-7 27 33)" />
+            
+            <!-- Front document page with soft shadow -->
+            <g filter="url(#buddyGlow)">
+              <rect x="15" y="7" width="44" height="52" rx="10" fill="url(#buddyGrad2)" />
+            </g>
+            
+            <!-- Front page clean sky blue border -->
+            <rect x="15" y="7" width="44" height="52" rx="10" stroke="url(#buddyGrad1)" stroke-width="1.3" />
+            
+            <!-- Folded dog-ear corner -->
+            <path d="M44 7V17.5C44 18.6 44.9 19.5 46 19.5H59" stroke="url(#buddyGrad1)" stroke-width="1.3" stroke-linecap="round" />
+            
+            <!-- Friendly Buddy Face (Wink & Smile) -->
+            <circle cx="29" cy="30" r="2.3" fill="#2585ee" />
+            <circle cx="45" cy="30" r="2.3" fill="#2585ee" />
+            <path d="M31 39.5C34 43 40 43 43 39.5" stroke="#2585ee" stroke-width="1.8" stroke-linecap="round" />
+          </g>
+
+          <!-- Vector Wordmark Typography: "PDF" in slate, "Buddy" in Sky Blue -->
+          <text x="80" y="47" font-family="'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-weight="300" font-size="39" fill="#122b46" letter-spacing="-0.02em">
+            PDF <tspan font-weight="600" fill="#2585ee">Buddy</tspan>
+          </text>
+          <!-- Soft Sky Blue Accent Dot -->
+          <circle cx="298" cy="42" r="4.8" fill="#4ea8fd" />
+        </svg>
+      </div>
+      <p class="app-subtitle">Easily turn your screenshots and saved pictures into a single document</p>
+    </header>
+
+    <main class="content-flow">
+      <!-- PDF Document Name Section -->
+      <section class="name-section">
+        <label for="pdfFileNameInput" class="name-label">Document Name</label>
+        <div class="name-input-container">
+          <input 
+            type="text" 
+            id="pdfFileNameInput" 
+            class="name-input" 
+            placeholder="Write PDF name (optional)" 
+            autocomplete="off"
+            spellcheck="false"
+          />
+          <span class="name-suffix">.pdf</span>
+        </div>
+      </section>
+
+      <!-- Layout Options Strip -->
+      <section class="options-strip">
+        <div class="option-pill">
+          <span class="option-title">Page Layout</span>
+          <select id="pageSizeSelect" class="clean-select">
+            <option value="fit" selected>Original Image Size</option>
+            <option value="a4">Standard A4</option>
+            <option value="letter">US Letter</option>
+          </select>
+        </div>
+
+        <div class="option-pill" id="orientationOption" style="display: none;">
+          <span class="option-title">Orientation</span>
+          <select id="pageOrientationSelect" class="clean-select">
+            <option value="auto" selected>Auto Fit</option>
+            <option value="portrait">Portrait</option>
+            <option value="landscape">Landscape</option>
+          </select>
+        </div>
+
+        <div class="option-pill">
+          <span class="option-title">Margin</span>
+          <select id="pageMarginSelect" class="clean-select">
+            <option value="0" selected>0 mm</option>
+            <option value="5">5 mm</option>
+            <option value="10">10 mm</option>
+            <option value="15">15 mm</option>
+            <option value="20">20 mm</option>
+          </select>
+        </div>
+      </section>
+
+      <!-- The Visible Empty Space / Paste & Pages Canvas -->
+      <section class="canvas-section">
+        <div id="dropZone" class="visible-paste-canvas" tabindex="0" role="region" aria-label="Image paste and preview workspace">
+          <input type="file" id="fileInput" accept="image/*" multiple class="file-hidden-input" />
+          
+          <!-- Empty State (Visible by default) -->
+          <div id="canvasEmptyState" class="canvas-empty-state">
+            <div class="dropzone-icon">
+              <!-- Delicate Thin stroke icon -->
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round">
+                <defs>
+                  <clipPath id="iconRoundedClip">
+                    <rect x="3" y="3" width="18" height="18" rx="3.5" ry="3.5"></rect>
+                  </clipPath>
+                </defs>
+                <rect x="3" y="3" width="18" height="18" rx="3.5" ry="3.5"></rect>
+                <circle cx="8.5" cy="8.5" r="1.8"></circle>
+                <g clip-path="url(#iconRoundedClip)">
+                  <path d="M21 15.5L15.5 10C14.7 9.2 13.3 9.2 12.5 10L3 19.5"></path>
+                </g>
+              </svg>
+            </div>
+            
+            <h2 class="dropzone-main-text">Paste image here or click to browse</h2>
+            <p class="dropzone-help-text">
+              Press <kbd class="key-tag">Ctrl + V</kbd> anytime to paste copied screenshots or images
+            </p>
+          </div>
+
+          <!-- Filled State (Grid of pages shown when images are added) -->
+          <div id="canvasFilledState" class="canvas-filled-state" style="display: none;">
+            <div class="canvas-filled-header">
+              <div class="canvas-header-info">
+                <span id="pagesCountHeading" class="pages-title">0 Pages Added</span>
+                <span class="pages-note">Drag thumbnails to reorder • Paste Ctrl+V anytime</span>
+              </div>
+            </div>
+            <div id="imagesGrid" class="pages-grid"></div>
+          </div>
+        </div>
+
+        <!-- Action Buttons ALWAYS VISIBLE below the canvas -->
+        <div class="canvas-actions-strip">
+          <button id="clearAllBtn" class="btn-clean btn-text-danger" type="button" disabled>
+            Remove All
+          </button>
+          
+          <div class="primary-actions-group">
+            <button id="previewPdfBtn" class="btn-clean btn-light" type="button" disabled>
+              Preview PDF
+            </button>
+            <button id="generatePdfBtn" class="btn-clean btn-accent" type="button" disabled>
+              Download PDF
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Image Adjustment & Resize Modal -->
+    <div id="adjustModal" class="clean-modal" role="dialog" aria-modal="true" style="display: none;">
+      <div class="clean-modal-backdrop" id="adjustModalBackdrop"></div>
+      <div class="clean-modal-card adjust-modal-card">
+        <div class="modal-top">
+          <div class="modal-info">
+            <h3 id="adjustModalTitle">Adjust Image Settings</h3>
+            <span id="adjustModalSubtitle" class="modal-filename">Resize, brightness, sharpness &amp; saturation</span>
+          </div>
+          <button id="closeAdjustModalBtn" class="btn-clean btn-light modal-close-btn" aria-label="Close">✕</button>
+        </div>
+        
+        <div class="adjust-modal-body">
+          <!-- Real-Time Interactive Preview -->
+          <div class="adjust-preview-panel">
+            <div class="adjust-preview-viewport">
+              <img id="adjustPreviewImg" src="" alt="Live Adjustment Preview" />
+            </div>
+            <div class="adjust-dim-badge">
+              <span id="adjustDimText">Output: 100% Size</span>
+            </div>
+          </div>
+
+          <!-- Adjustment Sliders -->
+          <div class="adjust-controls-panel">
+            <!-- Scale / Resize -->
+            <div class="adjust-control-group">
+              <div class="adjust-control-header">
+                <label for="adjustScaleSlider">Resize / Scale</label>
+                <span id="adjustScaleVal" class="adjust-val-badge">100%</span>
+              </div>
+              <input type="range" id="adjustScaleSlider" min="25" max="150" step="5" value="100" class="clean-slider" />
+              <div class="slider-ticks"><span>25%</span><span>100%</span><span>150%</span></div>
+            </div>
+
+            <!-- Brightness -->
+            <div class="adjust-control-group">
+              <div class="adjust-control-header">
+                <label for="adjustBrightnessSlider">Brightness</label>
+                <span id="adjustBrightnessVal" class="adjust-val-badge">100%</span>
+              </div>
+              <input type="range" id="adjustBrightnessSlider" min="50" max="150" step="1" value="100" class="clean-slider" />
+              <div class="slider-ticks"><span>Darker (50%)</span><span>Normal</span><span>Brighter (150%)</span></div>
+            </div>
+
+            <!-- Sharpness -->
+            <div class="adjust-control-group">
+              <div class="adjust-control-header">
+                <label for="adjustSharpnessSlider">Sharpness</label>
+                <span id="adjustSharpnessVal" class="adjust-val-badge">0%</span>
+              </div>
+              <input type="range" id="adjustSharpnessSlider" min="0" max="100" step="5" value="0" class="clean-slider" />
+              <div class="slider-ticks"><span>Default (0%)</span><span>Crisp</span><span>Ultra Sharp (100%)</span></div>
+            </div>
+
+            <!-- Saturation -->
+            <div class="adjust-control-group">
+              <div class="adjust-control-header">
+                <label for="adjustSaturationSlider">Saturation</label>
+                <span id="adjustSaturationVal" class="adjust-val-badge">100%</span>
+              </div>
+              <input type="range" id="adjustSaturationSlider" min="0" max="200" step="5" value="100" class="clean-slider" />
+              <div class="slider-ticks"><span>Black &amp; White (0%)</span><span>Normal</span><span>Vivid (200%)</span></div>
+            </div>
+
+            <!-- Apply to All Checkbox -->
+            <label class="adjust-checkbox-label" for="adjustApplyToAll">
+              <input type="checkbox" id="adjustApplyToAll" class="clean-checkbox" />
+              <span>Apply these adjustments to all pages</span>
+            </label>
+
+            <!-- Actions Footer -->
+            <div class="adjust-actions-footer">
+              <button id="adjustResetBtn" class="btn-clean btn-light" type="button">Reset</button>
+              <button id="adjustSaveBtn" class="btn-clean btn-accent" type="button">Apply Adjustments</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PDF Preview Modal -->
+    <div id="previewModal" class="clean-modal" role="dialog" aria-modal="true" style="display: none;">
+      <div class="clean-modal-backdrop" id="modalBackdrop"></div>
+      <div class="clean-modal-card">
+        <div class="modal-top">
+          <div class="modal-info">
+            <h3 id="previewModalTitle">Document Preview</h3>
+            <span id="previewModalFilename" class="modal-filename"></span>
+          </div>
+          <div class="modal-buttons">
+            <button id="modalDownloadBtn" class="btn-clean btn-accent">Download</button>
+            <button id="closeModalBtn" class="btn-clean btn-light modal-close-btn" aria-label="Close">✕</button>
+          </div>
+        </div>
+        <div class="modal-frame-wrap">
+          <iframe id="pdfPreviewIframe" title="PDF Preview" src="about:blank"></iframe>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toastContainer" class="toast-stack"></div>
+  </div>
+
+  <script src="jspdf.umd.min.js"></script>
+  <script src="sortable.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
