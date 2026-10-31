@@ -473,6 +473,7 @@ body {
   position: relative;
   cursor: default;
   width: 100%;
+  touch-action: pan-y;
 }
 
 .clean-page-card:hover {
@@ -506,6 +507,10 @@ body {
   padding: 12px;
   overflow: hidden;
   cursor: grab;
+  position: relative;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .card-preview-area:active {
@@ -519,20 +524,57 @@ body {
   border-radius: var(--radius-sm);
   box-shadow: 0 6px 18px rgba(35, 100, 160, 0.12);
   transition: transform 0.25s ease, filter 0.25s ease;
+  pointer-events: none;
+}
+
+.card-drag-hint {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(4px);
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  box-shadow: 0 2px 6px rgba(18, 43, 70, 0.08);
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Sortable touch and drag feedback */
+.sortable-ghost {
+  opacity: 0.3 !important;
+  transform: scale(0.97) !important;
+}
+
+.sortable-chosen {
+  box-shadow: 0 16px 36px rgba(35, 130, 235, 0.26) !important;
+}
+
+.sortable-drag {
+  opacity: 1 !important;
+  transform: scale(1.03) rotate(1deg) !important;
+  box-shadow: 0 20px 42px rgba(35, 130, 235, 0.32) !important;
+  z-index: 9999 !important;
 }
 
 .card-bottom-bar {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 16px;
+  gap: clamp(8px, 2vw, 14px);
   padding: 12px 14px 16px 14px;
   background: transparent;
 }
 
 .card-icon-btn {
-  width: 44px;
-  height: 44px;
+  width: clamp(38px, 5.2vw, 42px);
+  height: clamp(38px, 5.2vw, 42px);
   border-radius: 50%;
   border: none;
   background: #eaf4fd;
@@ -547,15 +589,23 @@ body {
   flex-shrink: 0;
 }
 
-.card-icon-btn:hover {
+.card-icon-btn:hover:not(:disabled) {
   background: #d4ebfc;
   color: #1263b3;
   transform: translateY(-2px) scale(1.08);
   box-shadow: 0 4px 14px rgba(30, 123, 214, 0.16);
 }
 
-.card-icon-btn:active {
+.card-icon-btn:active:not(:disabled) {
   transform: translateY(0) scale(0.98);
+}
+
+.card-icon-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  pointer-events: none;
+  box-shadow: none !important;
+  transform: none !important;
 }
 
 /* Clear Red Color for Remove Button */
@@ -565,9 +615,12 @@ body {
   box-shadow: 0 2px 8px rgba(239, 68, 68, 0.1);
 }
 
-.card-icon-btn.btn-danger:hover {
+.card-icon-btn.btn-danger:hover:not(:disabled) {
   background: #fecaca;
   color: #dc2626;
+  transform: translateY(-2px) scale(1.08);
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.22);
+}
   transform: translateY(-2px) scale(1.08);
   box-shadow: 0 4px 14px rgba(239, 68, 68, 0.22);
 }
@@ -878,15 +931,62 @@ body {
   font-size: 1.1rem;
 }
 
-.modal-frame-wrap {
+.modal-preview-viewport {
   flex: 1;
-  background: #1c2b3d;
+  background: #eef4fa;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: clamp(16px, 3.5vw, 32px) clamp(12px, 3vw, 24px);
+  display: flex;
+  justify-content: center;
 }
 
-.modal-frame-wrap iframe {
+.pdf-sheets-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(20px, 4vw, 32px);
+  width: 100%;
+  max-width: 620px;
+}
+
+.pdf-sheet-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.pdf-sheet-header {
+  font-size: clamp(0.85rem, 1.4vw + 0.2rem, 0.95rem);
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: #ffffff;
+  padding: 4px 14px;
+  border-radius: var(--radius-full);
+  box-shadow: 0 2px 8px rgba(18, 43, 70, 0.06);
+}
+
+.pdf-sheet {
+  background: #ffffff;
+  border-radius: 4px;
+  box-shadow: 0 10px 30px rgba(18, 43, 70, 0.12), 0 2px 6px rgba(18, 43, 70, 0.05);
+  border: 1px solid rgba(18, 43, 70, 0.08);
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.pdf-sheet img {
   width: 100%;
   height: 100%;
-  border: none;
+  object-fit: contain;
+  display: block;
 }
 
 /* ==========================================================================

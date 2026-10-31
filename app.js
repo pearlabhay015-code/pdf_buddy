@@ -39,7 +39,7 @@
   const closeModalBtn = document.getElementById('closeModalBtn');
   const modalDownloadBtn = document.getElementById('modalDownloadBtn');
   const previewModalFilename = document.getElementById('previewModalFilename');
-  const pdfPreviewIframe = document.getElementById('pdfPreviewIframe');
+  const pdfSheetsContainer = document.getElementById('pdfSheetsContainer');
 
   // Image Adjustment Modal Elements
   const adjustModal = document.getElementById('adjustModal');
@@ -302,22 +302,43 @@
           </span>
         </div>
         <div class="card-preview-area" title="Drag to reorder">
+          <div class="card-drag-hint">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+              <circle cx="9" cy="6" r="2"></circle>
+              <circle cx="15" cy="6" r="2"></circle>
+              <circle cx="9" cy="12" r="2"></circle>
+              <circle cx="15" cy="12" r="2"></circle>
+              <circle cx="9" cy="18" r="2"></circle>
+              <circle cx="15" cy="18" r="2"></circle>
+            </svg>
+            <span>Hold to drag</span>
+          </div>
           <img src="${item.dataUrl}" alt="Page ${index + 1}" style="transform: rotate(${item.rotation}deg); filter: ${filterStyle};" />
         </div>
         <div class="card-bottom-bar">
+          <button class="card-icon-btn btn-move-prev" type="button" title="Move earlier" aria-label="Move earlier" ${index === 0 ? 'disabled' : ''}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+          </button>
+          <button class="card-icon-btn btn-move-next" type="button" title="Move later" aria-label="Move later" ${index === images.length - 1 ? 'disabled' : ''}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </button>
           <button class="card-icon-btn btn-adjust" type="button" title="Adjust Image (Resize, Brightness, Sharpness & Saturation)" aria-label="Adjust image">
-            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M12 20h9"></path>
               <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
             </svg>
           </button>
           <button class="card-icon-btn btn-rotate" type="button" title="Rotate 90° Clockwise" aria-label="Rotate image">
-            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
             </svg>
           </button>
           <button class="card-icon-btn btn-danger btn-remove" type="button" title="Remove Page" aria-label="Remove page">
-            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
               <line x1="18" y1="6" x2="6" y2="18"></line>
               <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
@@ -326,24 +347,40 @@
       `;
 
       // Button listeners
+      const movePrevBtn = card.querySelector('.btn-move-prev');
+      const moveNextBtn = card.querySelector('.btn-move-next');
       const adjustBtn = card.querySelector('.btn-adjust');
       const rotateBtn = card.querySelector('.btn-rotate');
       const removeBtn = card.querySelector('.btn-remove');
 
+      movePrevBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const curIdx = parseInt(card.dataset.index, 10);
+        movePage(curIdx, curIdx - 1);
+      });
+
+      moveNextBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const curIdx = parseInt(card.dataset.index, 10);
+        movePage(curIdx, curIdx + 1);
+      });
+
       adjustBtn.addEventListener('click', (e) => {
         e.stopPropagation();
-        openAdjustModal(index);
+        openAdjustModal(parseInt(card.dataset.index, 10));
       });
 
       rotateBtn.addEventListener('click', (e) => {
         e.stopPropagation();
-        item.rotation = (item.rotation + 90) % 360;
+        const curIdx = parseInt(card.dataset.index, 10);
+        images[curIdx].rotation = (images[curIdx].rotation + 90) % 360;
         renderPages();
       });
 
       removeBtn.addEventListener('click', (e) => {
         e.stopPropagation();
-        images.splice(index, 1);
+        const curIdx = parseInt(card.dataset.index, 10);
+        images.splice(curIdx, 1);
         renderPages();
         showToast('Page removed');
       });
@@ -388,6 +425,28 @@
     initSortable();
   }
 
+  function movePage(fromIndex, toIndex) {
+    if (toIndex < 0 || toIndex >= images.length) return;
+    const item = images.splice(fromIndex, 1)[0];
+    images.splice(toIndex, 0, item);
+    renderPages();
+    showToast(`Moved to Page ${toIndex + 1}`);
+  }
+
+  function updateCardNumbering() {
+    const cards = imagesGrid.querySelectorAll('.clean-page-card');
+    cards.forEach((card, idx) => {
+      card.dataset.index = idx;
+      const pill = card.querySelector('.page-number-pill');
+      if (pill) pill.textContent = `Page ${idx + 1}`;
+
+      const movePrevBtn = card.querySelector('.btn-move-prev');
+      const moveNextBtn = card.querySelector('.btn-move-next');
+      if (movePrevBtn) movePrevBtn.disabled = (idx === 0);
+      if (moveNextBtn) moveNextBtn.disabled = (idx === cards.length - 1);
+    });
+  }
+
   function initSortable() {
     if (sortableInstance) {
       sortableInstance.destroy();
@@ -396,16 +455,28 @@
 
     if (window.Sortable && imagesGrid) {
       sortableInstance = new window.Sortable(imagesGrid, {
-        animation: 200,
+        animation: 250,
         handle: '.card-preview-area',
         draggable: '.clean-page-card',
         filter: '.add-page-card',
         preventOnFilter: false,
+        // Smooth touch behavior on mobile:
+        delay: 150,
+        delayOnTouchOnly: true,
+        touchStartThreshold: 6,
+        forceFallback: true,
+        fallbackTolerance: 3,
+        scroll: true,
+        scrollSensitivity: 60,
+        scrollSpeed: 20,
+        ghostClass: 'sortable-ghost',
+        chosenClass: 'sortable-chosen',
+        dragClass: 'sortable-drag',
         onEnd: (evt) => {
           if (evt.oldIndex !== evt.newIndex) {
             const moved = images.splice(evt.oldIndex, 1)[0];
             images.splice(evt.newIndex, 0, moved);
-            renderPages();
+            updateCardNumbering();
           }
         }
       });
@@ -720,25 +791,70 @@
   generatePdfBtn.addEventListener('click', downloadPdf);
 
   // ---------------------------------------------------------------------------
-  // Preview Modal
+  // Preview Modal (Paper Sheet View - 100% Reliable across Phone & Desktop)
   // ---------------------------------------------------------------------------
   async function openPreview() {
     try {
       previewPdfBtn.textContent = 'Opening Preview...';
       previewPdfBtn.disabled = true;
 
-      const doc = await createPdf();
       const fileName = getCleanFileName();
+      previewModalFilename.textContent = fileName;
+      pdfSheetsContainer.innerHTML = '';
 
-      if (activePreviewBlobUrl) {
-        URL.revokeObjectURL(activePreviewBlobUrl);
+      const format = pageSizeSelect.value;
+      const marginVal = parseInt(pageMarginSelect.value, 10) || 0;
+      const userOrientation = pageOrientationSelect ? pageOrientationSelect.value : 'auto';
+
+      for (let i = 0; i < images.length; i++) {
+        const item = images[i];
+        const processed = await getRenderedImageBlob(item);
+
+        let orientation = userOrientation;
+        if (orientation === 'auto') {
+          orientation = processed.width > processed.height ? 'landscape' : 'portrait';
+        }
+
+        // Calculate sheet aspect ratio and margin percent
+        let sheetAspect = 1;
+        let marginPercent = 0;
+
+        if (format === 'a4') {
+          sheetAspect = orientation === 'landscape' ? (297 / 210) : (210 / 297);
+          const shortSideMm = 210;
+          marginPercent = (marginVal / shortSideMm) * 100;
+        } else if (format === 'letter') {
+          sheetAspect = orientation === 'landscape' ? (279.4 / 215.9) : (215.9 / 279.4);
+          const shortSideMm = 215.9;
+          marginPercent = (marginVal / shortSideMm) * 100;
+        } else {
+          // Fit image
+          sheetAspect = processed.width / processed.height;
+          marginPercent = marginVal > 0 ? (marginVal / 160) * 100 : 0;
+        }
+
+        const sheetWrapper = document.createElement('div');
+        sheetWrapper.className = 'pdf-sheet-wrapper';
+
+        const sheetHeader = document.createElement('div');
+        sheetHeader.className = 'pdf-sheet-header';
+        sheetHeader.textContent = `Page ${i + 1} of ${images.length}`;
+
+        const sheet = document.createElement('div');
+        sheet.className = 'pdf-sheet';
+        sheet.style.aspectRatio = `${sheetAspect}`;
+        sheet.style.padding = `${marginPercent.toFixed(2)}%`;
+
+        const img = document.createElement('img');
+        img.src = processed.dataUrl;
+        img.alt = `Page ${i + 1}`;
+
+        sheet.appendChild(img);
+        sheetWrapper.appendChild(sheetHeader);
+        sheetWrapper.appendChild(sheet);
+        pdfSheetsContainer.appendChild(sheetWrapper);
       }
 
-      const blob = doc.output('blob');
-      activePreviewBlobUrl = URL.createObjectURL(blob);
-
-      pdfPreviewIframe.src = activePreviewBlobUrl;
-      previewModalFilename.textContent = fileName;
       previewModal.style.display = 'flex';
       document.body.style.overflow = 'hidden';
     } catch (err) {
@@ -751,12 +867,8 @@
 
   function closePreview() {
     previewModal.style.display = 'none';
-    pdfPreviewIframe.src = 'about:blank';
+    pdfSheetsContainer.innerHTML = '';
     document.body.style.overflow = '';
-    if (activePreviewBlobUrl) {
-      URL.revokeObjectURL(activePreviewBlobUrl);
-      activePreviewBlobUrl = null;
-    }
   }
 
   previewPdfBtn.addEventListener('click', openPreview);

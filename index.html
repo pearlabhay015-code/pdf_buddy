@@ -262,19 +262,19 @@
     <!-- PDF Preview Modal -->
     <div id="previewModal" class="clean-modal" role="dialog" aria-modal="true" style="display: none;">
       <div class="clean-modal-backdrop" id="modalBackdrop"></div>
-      <div class="clean-modal-card">
+      <div class="clean-modal-card preview-modal-card">
         <div class="modal-top">
           <div class="modal-info">
             <h3 id="previewModalTitle">Document Preview</h3>
             <span id="previewModalFilename" class="modal-filename"></span>
           </div>
           <div class="modal-buttons">
-            <button id="modalDownloadBtn" class="btn-clean btn-accent">Download</button>
+            <button id="modalDownloadBtn" class="btn-clean btn-accent">Download PDF</button>
             <button id="closeModalBtn" class="btn-clean btn-light modal-close-btn" aria-label="Close">✕</button>
           </div>
         </div>
-        <div class="modal-frame-wrap">
-          <iframe id="pdfPreviewIframe" title="PDF Preview" src="about:blank"></iframe>
+        <div class="modal-preview-viewport">
+          <div id="pdfSheetsContainer" class="pdf-sheets-container"></div>
         </div>
       </div>
     </div>
