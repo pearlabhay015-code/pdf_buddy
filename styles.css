@@ -479,17 +479,31 @@ body {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  transition: box-shadow 0.18s ease;
   position: relative;
   cursor: default;
   width: 100%;
   touch-action: pan-y;
+  will-change: transform;
 }
 
-.clean-page-card:hover {
+body:not(.is-sorting-active) .clean-page-card:hover {
   transform: translateY(-4px);
   border: none;
   box-shadow: var(--shadow-hover);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+/* While reorder drag is active: kill transform transitions for instant 60/120 FPS response */
+body.is-sorting-active,
+body.is-sorting-active * {
+  user-select: none !important;
+  -webkit-user-select: none !important;
+}
+
+body.is-sorting-active .clean-page-card {
+  transition: none !important;
+  cursor: grabbing !important;
 }
 
 .card-top {
@@ -524,6 +538,7 @@ body {
   touch-action: none;
   user-select: none;
   -webkit-user-select: none;
+  -webkit-user-drag: none;
 }
 
 .card-preview-area:active {
@@ -537,44 +552,51 @@ body {
   border: none;
   border-radius: var(--radius-sm);
   box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
-  transition: transform 0.25s ease, filter 0.25s ease;
   pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
 }
 
 .card-drag-hint {
   position: absolute;
   top: 8px;
   right: 8px;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(4px);
-  padding: 3px 8px;
+  padding: 4px 10px;
   border-radius: var(--radius-full);
   display: flex;
   align-items: center;
-  gap: 4px;
-  font-size: 0.72rem;
-  font-weight: 500;
+  gap: 5px;
+  font-size: 0.74rem;
+  font-weight: 600;
   color: var(--text-muted);
-  box-shadow: 0 2px 6px rgba(18, 43, 70, 0.08);
+  box-shadow: 0 2px 6px rgba(18, 43, 70, 0.1);
   pointer-events: none;
   user-select: none;
 }
 
-/* Sortable touch and drag feedback */
+/* Modern High-Performance Sortable Drag Feedback */
 .sortable-ghost {
-  opacity: 0.3 !important;
-  transform: scale(0.97) !important;
+  opacity: 0.25 !important;
+  background: #e0f2fe !important;
+  border: 2px dashed #0284c7 !important;
+  box-shadow: none !important;
+  transform: scale(0.98) !important;
 }
 
 .sortable-chosen {
-  box-shadow: 0 16px 36px rgba(14, 165, 233, 0.26) !important;
+  cursor: grabbing !important;
+  box-shadow: 0 14px 32px rgba(2, 132, 199, 0.3) !important;
 }
 
 .sortable-drag {
-  opacity: 1 !important;
-  transform: scale(1.03) rotate(1deg) !important;
-  box-shadow: 0 20px 42px rgba(14, 165, 233, 0.32) !important;
+  opacity: 0.98 !important;
+  transform: scale(1.02) !important;
+  box-shadow: 0 20px 45px rgba(15, 23, 42, 0.24) !important;
+  cursor: grabbing !important;
   z-index: 9999 !important;
+  will-change: transform;
 }
 
 .card-bottom-bar {

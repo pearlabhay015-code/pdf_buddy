@@ -333,7 +333,7 @@
               <circle cx="9" cy="18" r="2"></circle>
               <circle cx="15" cy="18" r="2"></circle>
             </svg>
-            <span>Hold to drag</span>
+            <span>Drag to reorder</span>
           </div>
           <img src="${item.dataUrl}" alt="Page ${index + 1}" style="transform: rotate(${item.rotation}deg); filter: ${filterStyle};" />
         </div>
@@ -477,24 +477,30 @@
 
     if (window.Sortable && imagesGrid) {
       sortableInstance = new window.Sortable(imagesGrid, {
-        animation: 250,
+        animation: 160,
+        easing: 'cubic-bezier(0.2, 0, 0, 1)',
         handle: '.card-preview-area',
         draggable: '.clean-page-card',
         filter: '.add-page-card',
         preventOnFilter: false,
-        // Smooth touch behavior on mobile:
-        delay: 150,
+        // Zero delay for desktop mouse dragging; quick 50ms delay on touch screens
+        delay: 50,
         delayOnTouchOnly: true,
-        touchStartThreshold: 6,
-        forceFallback: true,
-        fallbackTolerance: 3,
+        touchStartThreshold: 3,
+        forceFallback: false,
+        fallbackOnBody: true,
         scroll: true,
-        scrollSensitivity: 60,
-        scrollSpeed: 20,
+        scrollSensitivity: 80,
+        scrollSpeed: 16,
+        bubbleScroll: true,
         ghostClass: 'sortable-ghost',
         chosenClass: 'sortable-chosen',
         dragClass: 'sortable-drag',
+        onStart: () => {
+          document.body.classList.add('is-sorting-active');
+        },
         onEnd: (evt) => {
+          document.body.classList.remove('is-sorting-active');
           if (evt.oldIndex !== evt.newIndex) {
             const moved = images.splice(evt.oldIndex, 1)[0];
             images.splice(evt.newIndex, 0, moved);
