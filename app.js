@@ -40,11 +40,6 @@
   const modalDownloadBtn = document.getElementById('modalDownloadBtn');
   const previewModalFilename = document.getElementById('previewModalFilename');
   const pdfSheetsContainer = document.getElementById('pdfSheetsContainer');
-  const modalPreviewViewport = document.querySelector('.modal-preview-viewport');
-  const previewZoomOutBtn = document.getElementById('previewZoomOutBtn');
-  const previewZoomInBtn = document.getElementById('previewZoomInBtn');
-  const previewZoomVal = document.getElementById('previewZoomVal');
-  const previewZoomFitBtn = document.getElementById('previewZoomFitBtn');
 
   // Image Adjustment & Crop Modal Elements
   const adjustModal = document.getElementById('adjustModal');
@@ -1075,71 +1070,6 @@
   generatePdfBtn.addEventListener('click', downloadPdf);
 
   // ---------------------------------------------------------------------------
-  // Preview Zoom State & Controls
-  // ---------------------------------------------------------------------------
-  let previewZoom = 100;
-
-  function setPreviewZoom(val) {
-    previewZoom = Math.max(50, Math.min(250, Math.round(val)));
-    if (previewZoomVal) {
-      previewZoomVal.textContent = `${previewZoom}%`;
-    }
-    if (previewZoomOutBtn) {
-      previewZoomOutBtn.disabled = (previewZoom <= 50);
-    }
-    if (previewZoomInBtn) {
-      previewZoomInBtn.disabled = (previewZoom >= 250);
-    }
-    if (pdfSheetsContainer) {
-      const baseW = 840;
-      const targetW = Math.round(baseW * (previewZoom / 100));
-      pdfSheetsContainer.style.maxWidth = `${targetW}px`;
-      pdfSheetsContainer.style.width = `${targetW}px`;
-    }
-  }
-
-  function fitPreviewZoom() {
-    if (!modalPreviewViewport || !pdfSheetsContainer) return;
-    const availableW = modalPreviewViewport.clientWidth - 48;
-    if (availableW > 0) {
-      const calculatedZoom = Math.round((availableW / 840) * 100);
-      setPreviewZoom(calculatedZoom);
-    }
-  }
-
-  if (previewZoomOutBtn) {
-    previewZoomOutBtn.addEventListener('click', () => {
-      setPreviewZoom(previewZoom - 15);
-    });
-  }
-
-  if (previewZoomInBtn) {
-    previewZoomInBtn.addEventListener('click', () => {
-      setPreviewZoom(previewZoom + 15);
-    });
-  }
-
-  if (previewZoomVal) {
-    previewZoomVal.addEventListener('click', () => {
-      setPreviewZoom(100);
-    });
-  }
-
-  if (previewZoomFitBtn) {
-    previewZoomFitBtn.addEventListener('click', fitPreviewZoom);
-  }
-
-  if (modalPreviewViewport) {
-    modalPreviewViewport.addEventListener('wheel', (e) => {
-      if (e.ctrlKey) {
-        e.preventDefault();
-        const delta = e.deltaY < 0 ? 10 : -10;
-        setPreviewZoom(previewZoom + delta);
-      }
-    }, { passive: false });
-  }
-
-  // ---------------------------------------------------------------------------
   // Preview Modal (Paper Sheet View - 100% Reliable across Phone & Desktop)
   // ---------------------------------------------------------------------------
   async function openPreview() {
@@ -1206,13 +1136,6 @@
 
       previewModal.style.display = 'flex';
       document.body.style.overflow = 'hidden';
-
-      // Auto-fit preview zoom on small screens or default to 100% on spacious displays
-      if (modalPreviewViewport && modalPreviewViewport.clientWidth < 880) {
-        fitPreviewZoom();
-      } else {
-        setPreviewZoom(100);
-      }
     } catch (err) {
       showToast(err.message || 'Error generating preview');
     } finally {
@@ -1241,17 +1164,6 @@
         closeAdjustModal();
       } else if (previewModal.style.display !== 'none') {
         closePreview();
-      }
-    } else if (previewModal && previewModal.style.display !== 'none') {
-      if (e.key === '+' || e.key === '=') {
-        e.preventDefault();
-        setPreviewZoom(previewZoom + 15);
-      } else if (e.key === '-' || e.key === '_') {
-        e.preventDefault();
-        setPreviewZoom(previewZoom - 15);
-      } else if (e.key === '0' && (e.ctrlKey || e.metaKey)) {
-        e.preventDefault();
-        setPreviewZoom(100);
       }
     }
   });

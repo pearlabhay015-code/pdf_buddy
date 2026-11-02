@@ -1210,96 +1210,6 @@ body.is-sorting-active .clean-page-card {
   color: var(--text-secondary);
 }
 
-/* Document Preview Zoom Controls Toolbar */
-.preview-zoom-bar {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: #f1f5f9;
-  padding: 4px 8px;
-  border-radius: var(--radius-full);
-  border: 1px solid #cbd5e1;
-  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.06);
-}
-
-.zoom-btn {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  border: none;
-  background: #ffffff;
-  color: #0f172a;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.12);
-  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
-  touch-action: manipulation;
-}
-
-.zoom-btn:hover:not(:disabled) {
-  background: #0284c7;
-  color: #ffffff;
-  transform: scale(1.08);
-  box-shadow: 0 4px 10px rgba(2, 132, 199, 0.4);
-}
-
-.zoom-btn:active:not(:disabled) {
-  transform: scale(0.95);
-}
-
-.zoom-btn:disabled {
-  opacity: 0.38;
-  cursor: not-allowed;
-}
-
-.zoom-val-badge {
-  min-width: 52px;
-  padding: 4px 8px;
-  font-size: 0.86rem;
-  font-weight: 700;
-  color: #0f172a;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  text-align: center;
-  border-radius: var(--radius-sm);
-  transition: background 0.15s ease, color 0.15s ease;
-  user-select: none;
-}
-
-.zoom-val-badge:hover {
-  background: #e2e8f0;
-  color: #0284c7;
-}
-
-.zoom-fit-btn {
-  padding: 5px 12px;
-  font-size: 0.82rem;
-  font-weight: 700;
-  background: #ffffff;
-  color: #0284c7;
-  border: 1.5px solid #bae6fd;
-  border-radius: var(--radius-full);
-  cursor: pointer;
-  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
-  touch-action: manipulation;
-}
-
-.zoom-fit-btn:hover {
-  background: #0284c7;
-  color: #ffffff;
-  border-color: #0284c7;
-  box-shadow: 0 4px 10px rgba(2, 132, 199, 0.35);
-  transform: translateY(-1px);
-}
-
-.zoom-fit-btn:active {
-  transform: translateY(0);
-}
-
 .modal-buttons {
   display: flex;
   align-items: center;
@@ -1351,9 +1261,8 @@ body.is-sorting-active .clean-page-card {
   align-items: center;
   gap: clamp(20px, 4vw, 36px);
   width: 100%;
-  max-width: 840px;
+  max-width: 860px;
   margin: 0 auto;
-  transition: max-width 0.15s ease-out, width 0.15s ease-out;
 }
 
 .pdf-sheet-wrapper {
@@ -1516,13 +1425,6 @@ body.is-sorting-active .clean-page-card {
 
   .adjust-actions-footer .btn-clean {
     width: 100%;
-  }
-
-  .preview-zoom-bar {
-    order: 3;
-    width: 100%;
-    justify-content: center;
-    margin-top: 4px;
   }
 }
 
