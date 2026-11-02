@@ -40,6 +40,11 @@
   const modalDownloadBtn = document.getElementById('modalDownloadBtn');
   const previewModalFilename = document.getElementById('previewModalFilename');
   const pdfSheetsContainer = document.getElementById('pdfSheetsContainer');
+  const modalPreviewViewport = document.querySelector('.modal-preview-viewport');
+  const previewZoomOutBtn = document.getElementById('previewZoomOutBtn');
+  const previewZoomInBtn = document.getElementById('previewZoomInBtn');
+  const previewZoomVal = document.getElementById('previewZoomVal');
+  const previewZoomFitBtn = document.getElementById('previewZoomFitBtn');
 
   // Image Adjustment & Crop Modal Elements
   const adjustModal = document.getElementById('adjustModal');
@@ -513,8 +518,8 @@
   // Image Adjustment & Crop Modal Logic
   // ---------------------------------------------------------------------------
   function updateCropBoxDOM() {
-    currentCrop.w = Math.max(0.05, Math.min(1, currentCrop.w));
-    currentCrop.h = Math.max(0.05, Math.min(1, currentCrop.h));
+    currentCrop.w = Math.max(0.04, Math.min(1, currentCrop.w));
+    currentCrop.h = Math.max(0.04, Math.min(1, currentCrop.h));
     currentCrop.x = Math.max(0, Math.min(1 - currentCrop.w, currentCrop.x));
     currentCrop.y = Math.max(0, Math.min(1 - currentCrop.h, currentCrop.y));
 
@@ -534,12 +539,12 @@
     cropBackdropRight.style.cssText = `top: ${topPct}%; left: ${leftPct + widthPct}%; width: ${Math.max(0, 100 - (leftPct + widthPct))}%; height: ${heightPct}%;`;
 
     const item = images[currentAdjustIndex];
-    if (item) {
-      const origW = item.originalWidth || item.width;
-      const origH = item.originalHeight || item.height;
-      const cropW = Math.round(currentCrop.w * origW);
-      const cropH = Math.round(currentCrop.h * origH);
-      const isFull = currentCrop.x < 0.01 && currentCrop.y < 0.01 && currentCrop.w > 0.98 && currentCrop.h > 0.98;
+    if (item && adjustPreviewImg) {
+      const origW = adjustPreviewImg.naturalWidth || item.width;
+      const origH = adjustPreviewImg.naturalHeight || item.height;
+      const cropW = Math.max(1, Math.round(currentCrop.w * origW));
+      const cropH = Math.max(1, Math.round(currentCrop.h * origH));
+      const isFull = currentCrop.x <= 0.005 && currentCrop.y <= 0.005 && currentCrop.w >= 0.995 && currentCrop.h >= 0.995;
       cropSizeBadge.textContent = isFull ? `${cropW} × ${cropH} px (Full)` : `${cropW} × ${cropH} px`;
     }
   }
@@ -555,10 +560,10 @@
     }
 
     const item = images[currentAdjustIndex];
-    if (!item) return;
+    if (!item || !adjustPreviewImg) return;
 
-    const origW = item.originalWidth || item.width;
-    const origH = item.originalHeight || item.height;
+    const origW = adjustPreviewImg.naturalWidth || item.width;
+    const origH = adjustPreviewImg.naturalHeight || item.height;
 
     const parts = ratioStr.split(':').map(Number);
     const targetRatio = parts[0] / parts[1]; // w / h in pixels
@@ -583,41 +588,8 @@
     updateCropBoxDOM();
   }
 
-  // Pointer & Touch drag interactions on Crop overlay
-  cropOverlay.addEventListener('pointerdown', (e) => {
-    e.preventDefault();
-    const handleEl = e.target.closest('.crop-handle');
-    if (handleEl) {
-      activeHandle = handleEl.dataset.handle;
-    } else if (e.target.closest('#cropBox')) {
-      activeHandle = 'box';
-    } else {
-      // Clicked on backdrop outside: reposition crop box centered on click
-      const rect = cropOverlay.getBoundingClientRect();
-      if (rect.width > 0 && rect.height > 0) {
-        const clickX = (e.clientX - rect.left) / rect.width;
-        const clickY = (e.clientY - rect.top) / rect.height;
-        const initSize = 0.45;
-        currentCrop = {
-          x: Math.max(0, Math.min(1 - initSize, clickX - initSize / 2)),
-          y: Math.max(0, Math.min(1 - initSize, clickY - initSize / 2)),
-          w: initSize,
-          h: initSize
-        };
-        updateCropBoxDOM();
-        activeHandle = 'se';
-      }
-    }
-
-    isDraggingCrop = true;
-    dragStartPointer = { x: e.clientX, y: e.clientY };
-    dragStartCrop = { ...currentCrop };
-    try {
-      cropOverlay.setPointerCapture(e.pointerId);
-    } catch (err) {}
-  });
-
-  cropOverlay.addEventListener('pointermove', (e) => {
+  // Window-level Pointer Tracking for 100% Reliable, Smooth Crop Box & Handle Dragging
+  const onCropPointerMove = (e) => {
     if (!isDraggingCrop || !activeHandle) return;
     const rect = cropOverlay.getBoundingClientRect();
     if (rect.width <= 0 || rect.height <= 0) return;
@@ -625,8 +597,8 @@
     const dx = (e.clientX - dragStartPointer.x) / rect.width;
     const dy = (e.clientY - dragStartPointer.y) / rect.height;
 
-    const minW = Math.max(0.05, 30 / rect.width);
-    const minH = Math.max(0.05, 30 / rect.height);
+    const minW = Math.max(0.04, 24 / rect.width);
+    const minH = Math.max(0.04, 24 / rect.height);
 
     if (activeHandle === 'box') {
       const maxX = 1 - dragStartCrop.w;
@@ -657,12 +629,12 @@
       let newW = x2 - x1;
       let newH = y2 - y1;
 
-      // Maintain locked aspect ratio if selected
+      // Maintain locked aspect ratio if preset selected
       if (activeRatio !== 'free') {
         const item = images[currentAdjustIndex];
-        if (item) {
-          const origW = item.originalWidth || item.width;
-          const origH = item.originalHeight || item.height;
+        if (item && adjustPreviewImg) {
+          const origW = adjustPreviewImg.naturalWidth || item.width;
+          const origH = adjustPreviewImg.naturalHeight || item.height;
           const parts = activeRatio.split(':').map(Number);
           const targetRatio = parts[0] / parts[1];
           const normRatio = targetRatio * (origH / origW);
@@ -677,30 +649,59 @@
       }
 
       currentCrop = {
-        x: x1,
-        y: y1,
+        x: Math.max(0, Math.min(1 - minW, x1)),
+        y: Math.max(0, Math.min(1 - minH, y1)),
         w: Math.max(minW, Math.min(1 - x1, newW)),
         h: Math.max(minH, Math.min(1 - y1, newH))
       };
     }
 
     updateCropBoxDOM();
-  });
+  };
 
-  const stopCropDrag = (e) => {
+  const onCropPointerUp = () => {
     if (isDraggingCrop) {
       isDraggingCrop = false;
       activeHandle = null;
-      try {
-        if (e && e.pointerId && cropOverlay.hasPointerCapture(e.pointerId)) {
-          cropOverlay.releasePointerCapture(e.pointerId);
-        }
-      } catch (err) {}
+      window.removeEventListener('pointermove', onCropPointerMove);
+      window.removeEventListener('pointerup', onCropPointerUp);
+      window.removeEventListener('pointercancel', onCropPointerUp);
     }
   };
 
-  cropOverlay.addEventListener('pointerup', stopCropDrag);
-  cropOverlay.addEventListener('pointercancel', stopCropDrag);
+  cropOverlay.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    const handleEl = e.target.closest('.crop-handle');
+    if (handleEl) {
+      activeHandle = handleEl.dataset.handle;
+    } else if (e.target.closest('#cropBox')) {
+      activeHandle = 'box';
+    } else {
+      // Clicked outside on backdrop: center a new crop area on click
+      const rect = cropOverlay.getBoundingClientRect();
+      if (rect.width > 0 && rect.height > 0) {
+        const clickX = (e.clientX - rect.left) / rect.width;
+        const clickY = (e.clientY - rect.top) / rect.height;
+        const initSize = 0.5;
+        currentCrop = {
+          x: Math.max(0, Math.min(1 - initSize, clickX - initSize / 2)),
+          y: Math.max(0, Math.min(1 - initSize, clickY - initSize / 2)),
+          w: initSize,
+          h: initSize
+        };
+        updateCropBoxDOM();
+        activeHandle = 'se';
+      }
+    }
+
+    isDraggingCrop = true;
+    dragStartPointer = { x: e.clientX, y: e.clientY };
+    dragStartCrop = { ...currentCrop };
+
+    window.addEventListener('pointermove', onCropPointerMove);
+    window.addEventListener('pointerup', onCropPointerUp);
+    window.addEventListener('pointercancel', onCropPointerUp);
+  });
 
   cropResetBtn.addEventListener('click', () => {
     currentCrop = { x: 0, y: 0, w: 1, h: 1 };
@@ -723,16 +724,10 @@
 
     adjustModalTitle.textContent = `Crop & Edit Page ${index + 1}`;
     
-    // Always use originalDataUrl so user can re-crop without generational degradation
-    const previewSrc = item.originalDataUrl || item.dataUrl;
-    adjustPreviewImg.src = previewSrc;
+    // Always use the latest image dataUrl
+    adjustPreviewImg.src = item.dataUrl;
 
-    if (item.crop) {
-      currentCrop = { ...item.crop };
-    } else {
-      currentCrop = { x: 0, y: 0, w: 1, h: 1 };
-    }
-
+    currentCrop = { x: 0, y: 0, w: 1, h: 1 };
     activeRatio = 'free';
     cropPresetBtns.forEach(btn => btn.classList.toggle('active', btn.dataset.ratio === 'free'));
 
@@ -782,65 +777,69 @@
     showToast('Reset settings to original');
   });
 
-  function cropImageCanvas(originalSrc, crop, naturalW, naturalH) {
-    return new Promise((resolve) => {
-      const isFull = !crop || (crop.x < 0.005 && crop.y < 0.005 && crop.w > 0.995 && crop.h > 0.995);
-      const img = new Image();
-      img.onload = () => {
-        if (isFull) {
-          resolve({
-            dataUrl: originalSrc,
-            width: naturalW,
-            height: naturalH
-          });
-          return;
-        }
+  // Synchronous Canvas Crop directly from the rendered image element
+  function cropImageSynchronous(imgElement, crop) {
+    const naturalW = imgElement.naturalWidth;
+    const naturalH = imgElement.naturalHeight;
+    if (!naturalW || !naturalH) {
+      throw new Error('Image preview not loaded');
+    }
 
-        const sx = Math.max(0, Math.round(crop.x * naturalW));
-        const sy = Math.max(0, Math.round(crop.y * naturalH));
-        const sw = Math.min(naturalW - sx, Math.max(1, Math.round(crop.w * naturalW)));
-        const sh = Math.min(naturalH - sy, Math.max(1, Math.round(crop.h * naturalH)));
-
-        const canvas = document.createElement('canvas');
-        canvas.width = sw;
-        canvas.height = sh;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, sx, sy, sw, sh, 0, 0, sw, sh);
-
-        resolve({
-          dataUrl: canvas.toDataURL('image/jpeg', 0.96),
-          width: sw,
-          height: sh
-        });
+    const isFull = !crop || (crop.x <= 0.005 && crop.y <= 0.005 && crop.w >= 0.995 && crop.h >= 0.995);
+    if (isFull) {
+      return {
+        dataUrl: imgElement.src,
+        width: naturalW,
+        height: naturalH,
+        isCropped: false
       };
-      img.src = originalSrc;
-    });
+    }
+
+    const sx = Math.max(0, Math.min(naturalW - 1, Math.round(crop.x * naturalW)));
+    const sy = Math.max(0, Math.min(naturalH - 1, Math.round(crop.y * naturalH)));
+    const sw = Math.max(1, Math.min(naturalW - sx, Math.round(crop.w * naturalW)));
+    const sh = Math.max(1, Math.min(naturalH - sy, Math.round(crop.h * naturalH)));
+
+    const canvas = document.createElement('canvas');
+    canvas.width = sw;
+    canvas.height = sh;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(imgElement, sx, sy, sw, sh, 0, 0, sw, sh);
+
+    return {
+      dataUrl: canvas.toDataURL('image/jpeg', 0.96),
+      width: sw,
+      height: sh,
+      isCropped: true
+    };
   }
 
-  adjustSaveBtn.addEventListener('click', async () => {
+  adjustSaveBtn.addEventListener('click', () => {
     if (currentAdjustIndex === null || !images[currentAdjustIndex]) {
       closeAdjustModal();
       return;
     }
 
+    const item = images[currentAdjustIndex];
     const newBrightness = parseInt(adjustBrightnessSlider.value, 10);
     const newSharpness = parseInt(adjustSharpnessSlider.value, 10);
     const newSaturation = parseInt(adjustSaturationSlider.value, 10);
     const applyToAll = adjustApplyToAll.checked;
 
-    const item = images[currentAdjustIndex];
-    const origSrc = item.originalDataUrl || item.dataUrl;
-    const origW = item.originalWidth || item.width;
-    const origH = item.originalHeight || item.height;
-
-    // Apply crop to current image
-    const croppedResult = await cropImageCanvas(origSrc, currentCrop, origW, origH);
-    item.dataUrl = croppedResult.dataUrl;
-    item.width = croppedResult.width;
-    item.height = croppedResult.height;
-    item.crop = (currentCrop.x < 0.005 && currentCrop.y < 0.005 && currentCrop.w > 0.995 && currentCrop.h > 0.995) 
-      ? null 
-      : { ...currentCrop };
+    try {
+      const cropped = cropImageSynchronous(adjustPreviewImg, currentCrop);
+      if (cropped.isCropped) {
+        item.dataUrl = cropped.dataUrl;
+        item.originalDataUrl = cropped.dataUrl;
+        item.width = cropped.width;
+        item.height = cropped.height;
+        item.originalWidth = cropped.width;
+        item.originalHeight = cropped.height;
+        item.crop = null;
+      }
+    } catch (err) {
+      console.error('Cropping error:', err);
+    }
 
     item.brightness = newBrightness;
     item.sharpness = newSharpness;
@@ -854,7 +853,7 @@
           other.saturation = newSaturation;
         }
       });
-      showToast('Cropped image & applied filters to all pages');
+      showToast('Cropped & updated settings for all pages');
     } else {
       showToast(`Updated Page ${currentAdjustIndex + 1}`);
     }
@@ -1070,6 +1069,71 @@
   generatePdfBtn.addEventListener('click', downloadPdf);
 
   // ---------------------------------------------------------------------------
+  // Preview Zoom State & Controls
+  // ---------------------------------------------------------------------------
+  let previewZoom = 100;
+
+  function setPreviewZoom(val) {
+    previewZoom = Math.max(50, Math.min(250, Math.round(val)));
+    if (previewZoomVal) {
+      previewZoomVal.textContent = `${previewZoom}%`;
+    }
+    if (previewZoomOutBtn) {
+      previewZoomOutBtn.disabled = (previewZoom <= 50);
+    }
+    if (previewZoomInBtn) {
+      previewZoomInBtn.disabled = (previewZoom >= 250);
+    }
+    if (pdfSheetsContainer) {
+      const baseW = 840;
+      const targetW = Math.round(baseW * (previewZoom / 100));
+      pdfSheetsContainer.style.maxWidth = `${targetW}px`;
+      pdfSheetsContainer.style.width = `${targetW}px`;
+    }
+  }
+
+  function fitPreviewZoom() {
+    if (!modalPreviewViewport || !pdfSheetsContainer) return;
+    const availableW = modalPreviewViewport.clientWidth - 48;
+    if (availableW > 0) {
+      const calculatedZoom = Math.round((availableW / 840) * 100);
+      setPreviewZoom(calculatedZoom);
+    }
+  }
+
+  if (previewZoomOutBtn) {
+    previewZoomOutBtn.addEventListener('click', () => {
+      setPreviewZoom(previewZoom - 15);
+    });
+  }
+
+  if (previewZoomInBtn) {
+    previewZoomInBtn.addEventListener('click', () => {
+      setPreviewZoom(previewZoom + 15);
+    });
+  }
+
+  if (previewZoomVal) {
+    previewZoomVal.addEventListener('click', () => {
+      setPreviewZoom(100);
+    });
+  }
+
+  if (previewZoomFitBtn) {
+    previewZoomFitBtn.addEventListener('click', fitPreviewZoom);
+  }
+
+  if (modalPreviewViewport) {
+    modalPreviewViewport.addEventListener('wheel', (e) => {
+      if (e.ctrlKey) {
+        e.preventDefault();
+        const delta = e.deltaY < 0 ? 10 : -10;
+        setPreviewZoom(previewZoom + delta);
+      }
+    }, { passive: false });
+  }
+
+  // ---------------------------------------------------------------------------
   // Preview Modal (Paper Sheet View - 100% Reliable across Phone & Desktop)
   // ---------------------------------------------------------------------------
   async function openPreview() {
@@ -1136,6 +1200,13 @@
 
       previewModal.style.display = 'flex';
       document.body.style.overflow = 'hidden';
+
+      // Auto-fit preview zoom on small screens or default to 100% on spacious displays
+      if (modalPreviewViewport && modalPreviewViewport.clientWidth < 880) {
+        fitPreviewZoom();
+      } else {
+        setPreviewZoom(100);
+      }
     } catch (err) {
       showToast(err.message || 'Error generating preview');
     } finally {
@@ -1164,6 +1235,17 @@
         closeAdjustModal();
       } else if (previewModal.style.display !== 'none') {
         closePreview();
+      }
+    } else if (previewModal && previewModal.style.display !== 'none') {
+      if (e.key === '+' || e.key === '=') {
+        e.preventDefault();
+        setPreviewZoom(previewZoom + 15);
+      } else if (e.key === '-' || e.key === '_') {
+        e.preventDefault();
+        setPreviewZoom(previewZoom - 15);
+      } else if (e.key === '0' && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        setPreviewZoom(100);
       }
     }
   });
