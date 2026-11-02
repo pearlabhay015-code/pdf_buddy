@@ -404,10 +404,10 @@ body {
   width: 100%;
 }
 
-/* Interactive Add More Images Card in Grid */
+/* Interactive Add More Images Card - Permanently Colored Bright Fresh Green */
 .add-page-card {
   min-height: 250px;
-  background: #ffffff;
+  background: #10b981;
   border: none;
   border-radius: var(--radius-lg);
   display: flex;
@@ -418,14 +418,15 @@ body {
   outline: none;
   user-select: none;
   width: 100%;
-  box-shadow: var(--shadow-soft);
+  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.35);
+  color: #ffffff;
 }
 
 .add-page-card:hover,
 .add-page-card:focus-visible {
-  background: #f0fdf4;
+  background: #059669;
   transform: translateY(-4px);
-  box-shadow: var(--shadow-hover);
+  box-shadow: 0 12px 32px rgba(16, 185, 129, 0.5);
 }
 
 .add-page-inner {
@@ -434,38 +435,38 @@ body {
   align-items: center;
   text-align: center;
   padding: 24px;
-  gap: 10px;
+  gap: 12px;
 }
 
 .add-card-icon {
-  width: 54px;
-  height: 54px;
+  width: 58px;
+  height: 58px;
   border-radius: 50%;
-  background: #10b981;
+  background: rgba(255, 255, 255, 0.25);
   color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.35);
-  transition: transform 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+  transition: transform 0.25s ease, background 0.25s ease;
 }
 
 .add-page-card:hover .add-card-icon {
   transform: scale(1.12);
-  background: #059669;
-  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.45);
+  background: rgba(255, 255, 255, 0.35);
 }
 
 .add-card-label {
-  font-size: clamp(1.1rem, 1.8vw + 0.3rem, 1.25rem);
-  font-weight: 700;
-  color: #059669;
+  font-size: clamp(1.15rem, 1.8vw + 0.3rem, 1.3rem);
+  font-weight: 800;
+  color: #ffffff;
 }
 
 .add-card-hint {
   font-size: clamp(0.85rem, 1.2vw + 0.2rem, 0.95rem);
-  color: var(--text-muted);
-  font-weight: 300;
+  color: #ffffff;
+  opacity: 0.95;
+  font-weight: 600;
 }
 
 /* Borderless Page Card with Solid White Contrast */
@@ -598,65 +599,64 @@ body {
   flex-shrink: 0;
 }
 
-/* Playful Bright Saturated Colors for Navigation Arrows */
+/* Permanently Bright Saturated Colors for Navigation Arrows */
 .card-icon-btn.btn-move-prev,
 .card-icon-btn.btn-move-next {
   background: #0284c7;
   color: #ffffff;
-  box-shadow: 0 3px 10px rgba(2, 132, 199, 0.35);
+  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.45);
 }
 
 .card-icon-btn.btn-move-prev:hover:not(:disabled),
 .card-icon-btn.btn-move-next:hover:not(:disabled) {
   background: #0369a1;
   transform: translateY(-2px) scale(1.1);
-  box-shadow: 0 6px 16px rgba(2, 132, 199, 0.45);
+  box-shadow: 0 8px 20px rgba(2, 132, 199, 0.55);
 }
 
-/* Playful Bright Sunny Gold/Yellow for Image Edit & Crop */
+/* Permanently Bright Sunny Gold/Yellow for Image Edit & Crop */
 .card-icon-btn.btn-adjust {
   background: #f59e0b;
   color: #ffffff;
-  box-shadow: 0 3px 10px rgba(245, 158, 11, 0.35);
+  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.45);
 }
 
 .card-icon-btn.btn-adjust:hover:not(:disabled) {
   background: #d97706;
   transform: translateY(-2px) scale(1.1);
-  box-shadow: 0 6px 16px rgba(245, 158, 11, 0.45);
+  box-shadow: 0 8px 20px rgba(245, 158, 11, 0.55);
 }
 
-/* Playful Bright Fresh Green for Image Rotate */
+/* Permanently Bright Fresh Green for Image Rotate */
 .card-icon-btn.btn-rotate {
   background: #10b981;
   color: #ffffff;
-  box-shadow: 0 3px 10px rgba(16, 185, 129, 0.35);
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.45);
 }
 
 .card-icon-btn.btn-rotate:hover:not(:disabled) {
   background: #059669;
   transform: translateY(-2px) scale(1.1);
-  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.45);
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.55);
 }
 
-/* Playful Bright Coral Red for Remove */
+/* Permanently Bright Coral Red for Remove */
 .card-icon-btn.btn-danger {
   background: #ef4444;
   color: #ffffff;
-  box-shadow: 0 3px 10px rgba(239, 68, 68, 0.35);
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.45);
 }
 
 .card-icon-btn.btn-danger:hover:not(:disabled) {
   background: #dc2626;
   transform: translateY(-2px) scale(1.1);
-  box-shadow: 0 6px 16px rgba(239, 68, 68, 0.45);
+  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.55);
 }
 
 .card-icon-btn:disabled {
-  opacity: 0.3;
+  opacity: 0.65;
   cursor: not-allowed;
   pointer-events: none;
-  box-shadow: none !important;
   transform: none !important;
 }
 
@@ -706,50 +706,38 @@ body {
   transform: none !important;
 }
 
-/* "Download PDF" - Bold Vibrant Sky Blue */
-.btn-accent {
-  background: #0284c7;
-  color: #ffffff;
+/* "Download PDF" - Permanently Vibrant Sky Blue */
+.btn-accent,
+.btn-accent:disabled {
+  background: #0284c7 !important;
+  color: #ffffff !important;
   border: none;
   font-weight: 700;
-  box-shadow: 0 4px 18px rgba(2, 132, 199, 0.45);
+  opacity: 1 !important;
+  box-shadow: 0 6px 20px rgba(2, 132, 199, 0.45) !important;
 }
 
 .btn-accent:hover:not(:disabled) {
-  background: #0369a1;
-  color: #ffffff;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 26px rgba(2, 132, 199, 0.55);
+  background: #0369a1 !important;
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 10px 28px rgba(2, 132, 199, 0.55) !important;
 }
 
-.btn-accent:disabled {
-  background: #38bdf8 !important;
+/* "Preview PDF" - Permanently Vibrant Fresh Green */
+.btn-light,
+.btn-light:disabled {
+  background: #10b981 !important;
   color: #ffffff !important;
-  opacity: 0.85 !important;
-  box-shadow: 0 2px 10px rgba(2, 132, 199, 0.25) !important;
-}
-
-/* "Preview PDF" - Bold Vibrant Fresh Green */
-.btn-light {
-  background: #10b981;
-  color: #ffffff;
   border: none;
   font-weight: 700;
-  box-shadow: 0 4px 18px rgba(16, 185, 129, 0.4);
+  opacity: 1 !important;
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.45) !important;
 }
 
 .btn-light:hover:not(:disabled) {
-  background: #059669;
-  color: #ffffff;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 26px rgba(16, 185, 129, 0.5);
-}
-
-.btn-light:disabled {
-  background: #34d399 !important;
-  color: #ffffff !important;
-  opacity: 0.85 !important;
-  box-shadow: 0 2px 10px rgba(16, 185, 129, 0.25) !important;
+  background: #059669 !important;
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 10px 28px rgba(16, 185, 129, 0.55) !important;
 }
 
 .modal-close-btn {
@@ -763,29 +751,23 @@ body {
   color: #0f172a;
 }
 
-/* "Remove All" - Bold Solid Coral Red Pill */
-.btn-text-danger {
-  background: #ef4444;
-  color: #ffffff;
+/* "Remove All" - Permanently Vibrant Solid Coral Red Pill */
+.btn-text-danger,
+.btn-text-danger:disabled {
+  background: #ef4444 !important;
+  color: #ffffff !important;
   border: none;
   font-weight: 700;
+  opacity: 1 !important;
   padding: clamp(12px, 2vw, 16px) clamp(22px, 4vw, 36px);
   border-radius: var(--radius-full);
-  box-shadow: 0 4px 18px rgba(239, 68, 68, 0.4);
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.45) !important;
 }
 
 .btn-text-danger:hover:not(:disabled) {
-  background: #dc2626;
-  color: #ffffff;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 26px rgba(239, 68, 68, 0.5);
-}
-
-.btn-text-danger:disabled {
-  background: #f87171 !important;
-  color: #ffffff !important;
-  opacity: 0.85 !important;
-  box-shadow: 0 2px 10px rgba(239, 68, 68, 0.25) !important;
+  background: #dc2626 !important;
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 10px 28px rgba(239, 68, 68, 0.55) !important;
 }
 
 /* ==========================================================================
