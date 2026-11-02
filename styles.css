@@ -404,10 +404,10 @@ body {
   width: 100%;
 }
 
-/* Interactive Add More Images Card - Permanently Colored Bright Fresh Green */
+/* Interactive Add More Images Card - Soft Light/Faded Fresh Green */
 .add-page-card {
   min-height: 250px;
-  background: #10b981;
+  background: #ecfdf5;
   border: none;
   border-radius: var(--radius-lg);
   display: flex;
@@ -418,15 +418,15 @@ body {
   outline: none;
   user-select: none;
   width: 100%;
-  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.35);
-  color: #ffffff;
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.12);
+  color: #059669;
 }
 
 .add-page-card:hover,
 .add-page-card:focus-visible {
-  background: #059669;
-  transform: translateY(-4px);
-  box-shadow: 0 12px 32px rgba(16, 185, 129, 0.5);
+  background: #d1fae5;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.22);
 }
 
 .add-page-inner {
@@ -439,34 +439,35 @@ body {
 }
 
 .add-card-icon {
-  width: 58px;
-  height: 58px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.25);
-  color: #ffffff;
+  background: #d1fae5;
+  color: #059669;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
-  transition: transform 0.25s ease, background 0.25s ease;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.15);
+  transition: transform 0.25s ease, background 0.25s ease, color 0.25s ease;
 }
 
 .add-page-card:hover .add-card-icon {
-  transform: scale(1.12);
-  background: rgba(255, 255, 255, 0.35);
+  transform: scale(1.1);
+  background: #10b981;
+  color: #ffffff;
 }
 
 .add-card-label {
   font-size: clamp(1.15rem, 1.8vw + 0.3rem, 1.3rem);
-  font-weight: 800;
-  color: #ffffff;
+  font-weight: 700;
+  color: #059669;
 }
 
 .add-card-hint {
   font-size: clamp(0.85rem, 1.2vw + 0.2rem, 0.95rem);
-  color: #ffffff;
-  opacity: 0.95;
-  font-weight: 600;
+  color: #047857;
+  opacity: 0.8;
+  font-weight: 500;
 }
 
 /* Borderless Page Card with Solid White Contrast */
