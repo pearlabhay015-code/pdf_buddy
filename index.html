@@ -166,41 +166,65 @@
       </section>
     </main>
 
-    <!-- Image Adjustment & Resize Modal -->
+    <!-- Image Adjustment & Crop Modal -->
     <div id="adjustModal" class="clean-modal" role="dialog" aria-modal="true" style="display: none;">
       <div class="clean-modal-backdrop" id="adjustModalBackdrop"></div>
       <div class="clean-modal-card adjust-modal-card">
         <div class="modal-top">
           <div class="modal-info">
-            <h3 id="adjustModalTitle">Adjust Image Settings</h3>
-            <span id="adjustModalSubtitle" class="modal-filename">Resize, brightness, sharpness &amp; saturation</span>
+            <h3 id="adjustModalTitle">Crop &amp; Edit Image</h3>
+            <span id="adjustModalSubtitle" class="modal-filename">Drag handles to crop, plus adjust brightness, sharpness &amp; saturation</span>
           </div>
           <button id="closeAdjustModalBtn" class="btn-clean btn-light modal-close-btn" aria-label="Close">✕</button>
         </div>
         
         <div class="adjust-modal-body">
-          <!-- Real-Time Interactive Preview -->
+          <!-- Real-Time Interactive Crop & Preview -->
           <div class="adjust-preview-panel">
-            <div class="adjust-preview-viewport">
-              <img id="adjustPreviewImg" src="" alt="Live Adjustment Preview" />
+            <div class="adjust-preview-viewport" id="adjustPreviewViewport">
+              <div class="crop-stage-wrapper" id="cropStageWrapper">
+                <img id="adjustPreviewImg" src="" alt="Live Crop and Edit Preview" draggable="false" />
+                <div class="crop-overlay" id="cropOverlay">
+                  <div class="crop-backdrop crop-backdrop-top" id="cropBackdropTop"></div>
+                  <div class="crop-backdrop crop-backdrop-bottom" id="cropBackdropBottom"></div>
+                  <div class="crop-backdrop crop-backdrop-left" id="cropBackdropLeft"></div>
+                  <div class="crop-backdrop crop-backdrop-right" id="cropBackdropRight"></div>
+                  
+                  <div class="crop-box" id="cropBox">
+                    <div class="crop-grid-lines">
+                      <div class="grid-line grid-line-h1"></div>
+                      <div class="grid-line grid-line-h2"></div>
+                      <div class="grid-line grid-line-v1"></div>
+                      <div class="grid-line grid-line-v2"></div>
+                    </div>
+                    <div class="crop-handle handle-nw" data-handle="nw"></div>
+                    <div class="crop-handle handle-ne" data-handle="ne"></div>
+                    <div class="crop-handle handle-sw" data-handle="sw"></div>
+                    <div class="crop-handle handle-se" data-handle="se"></div>
+                    <div class="crop-handle handle-n" data-handle="n"></div>
+                    <div class="crop-handle handle-s" data-handle="s"></div>
+                    <div class="crop-handle handle-w" data-handle="w"></div>
+                    <div class="crop-handle handle-e" data-handle="e"></div>
+                    <span class="crop-size-badge" id="cropSizeBadge">Full Image</span>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div class="adjust-dim-badge">
-              <span id="adjustDimText">Output: 100% Size</span>
+            
+            <!-- Quick Aspect Ratio Presets -->
+            <div class="crop-presets-strip">
+              <span class="crop-presets-label">Crop Ratio:</span>
+              <button type="button" class="crop-preset-btn active" data-ratio="free">Free</button>
+              <button type="button" class="crop-preset-btn" data-ratio="1:1">1:1</button>
+              <button type="button" class="crop-preset-btn" data-ratio="4:3">4:3</button>
+              <button type="button" class="crop-preset-btn" data-ratio="16:9">16:9</button>
+              <button type="button" class="crop-preset-btn" data-ratio="3:4">3:4</button>
+              <button type="button" class="crop-preset-btn btn-crop-reset" id="cropResetBtn">Reset Crop</button>
             </div>
           </div>
 
-          <!-- Adjustment Sliders -->
+          <!-- Adjustment Sliders (Brightness, Sharpness, Saturation) -->
           <div class="adjust-controls-panel">
-            <!-- Scale / Resize -->
-            <div class="adjust-control-group">
-              <div class="adjust-control-header">
-                <label for="adjustScaleSlider">Resize / Scale</label>
-                <span id="adjustScaleVal" class="adjust-val-badge">100%</span>
-              </div>
-              <input type="range" id="adjustScaleSlider" min="25" max="150" step="5" value="100" class="clean-slider" />
-              <div class="slider-ticks"><span>25%</span><span>100%</span><span>150%</span></div>
-            </div>
-
             <!-- Brightness -->
             <div class="adjust-control-group">
               <div class="adjust-control-header">
@@ -234,13 +258,13 @@
             <!-- Apply to All Checkbox -->
             <label class="adjust-checkbox-label" for="adjustApplyToAll">
               <input type="checkbox" id="adjustApplyToAll" class="clean-checkbox" />
-              <span>Apply these adjustments to all pages</span>
+              <span>Apply color adjustments to all pages</span>
             </label>
 
             <!-- Actions Footer -->
             <div class="adjust-actions-footer">
-              <button id="adjustResetBtn" class="btn-clean btn-light" type="button">Reset</button>
-              <button id="adjustSaveBtn" class="btn-clean btn-accent" type="button">Apply Adjustments</button>
+              <button id="adjustResetBtn" class="btn-clean btn-light" type="button">Reset All</button>
+              <button id="adjustSaveBtn" class="btn-clean btn-accent" type="button">Apply &amp; Save</button>
             </div>
           </div>
         </div>

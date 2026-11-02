@@ -41,16 +41,23 @@
   const previewModalFilename = document.getElementById('previewModalFilename');
   const pdfSheetsContainer = document.getElementById('pdfSheetsContainer');
 
-  // Image Adjustment Modal Elements
+  // Image Adjustment & Crop Modal Elements
   const adjustModal = document.getElementById('adjustModal');
   const adjustModalBackdrop = document.getElementById('adjustModalBackdrop');
   const closeAdjustModalBtn = document.getElementById('closeAdjustModalBtn');
   const adjustModalTitle = document.getElementById('adjustModalTitle');
   const adjustPreviewImg = document.getElementById('adjustPreviewImg');
-  const adjustDimText = document.getElementById('adjustDimText');
+  const cropStageWrapper = document.getElementById('cropStageWrapper');
+  const cropOverlay = document.getElementById('cropOverlay');
+  const cropBox = document.getElementById('cropBox');
+  const cropBackdropTop = document.getElementById('cropBackdropTop');
+  const cropBackdropBottom = document.getElementById('cropBackdropBottom');
+  const cropBackdropLeft = document.getElementById('cropBackdropLeft');
+  const cropBackdropRight = document.getElementById('cropBackdropRight');
+  const cropSizeBadge = document.getElementById('cropSizeBadge');
+  const cropPresetBtns = document.querySelectorAll('.crop-preset-btn[data-ratio]');
+  const cropResetBtn = document.getElementById('cropResetBtn');
 
-  const adjustScaleSlider = document.getElementById('adjustScaleSlider');
-  const adjustScaleVal = document.getElementById('adjustScaleVal');
   const adjustBrightnessSlider = document.getElementById('adjustBrightnessSlider');
   const adjustBrightnessVal = document.getElementById('adjustBrightnessVal');
   const adjustSharpnessSlider = document.getElementById('adjustSharpnessSlider');
@@ -60,6 +67,14 @@
   const adjustApplyToAll = document.getElementById('adjustApplyToAll');
   const adjustResetBtn = document.getElementById('adjustResetBtn');
   const adjustSaveBtn = document.getElementById('adjustSaveBtn');
+
+  // Crop Interactive State
+  let currentCrop = { x: 0, y: 0, w: 1, h: 1 }; // normalized 0..1 coordinates
+  let activeRatio = 'free'; // 'free', '1:1', '4:3', '16:9', '3:4'
+  let isDraggingCrop = false;
+  let activeHandle = null; // 'nw', 'ne', 'sw', 'se', 'n', 's', 'e', 'w', or 'box'
+  let dragStartPointer = { x: 0, y: 0 };
+  let dragStartCrop = { x: 0, y: 0, w: 1, h: 1 };
 
   const toastContainer = document.getElementById('toastContainer');
 
@@ -106,10 +121,13 @@
             id: 'img_' + Date.now() + '_' + Math.random().toString(36).substring(2, 8),
             name: blob.name || `${defaultName}_${images.length + 1}`,
             dataUrl: dataUrl,
+            originalDataUrl: dataUrl,
+            originalWidth: img.naturalWidth || img.width,
+            originalHeight: img.naturalHeight || img.height,
             width: img.naturalWidth || img.width,
             height: img.naturalHeight || img.height,
             rotation: 0,
-            scale: 100,         // 25% - 150%
+            crop: null,
             brightness: 100,    // 50% - 150%
             sharpness: 0,       // 0% - 100%
             saturation: 100     // 0% - 200%
@@ -286,9 +304,8 @@
       card.className = 'clean-page-card';
       card.dataset.index = index;
 
-      const scaleFactor = (item.scale || 100) / 100;
-      const displayW = Math.round(item.width * scaleFactor);
-      const displayH = Math.round(item.height * scaleFactor);
+      const displayW = item.width;
+      const displayH = item.height;
 
       // Contrast boost computed from sharpness slider
       const contrastVal = 100 + (item.sharpness || 0) * 0.4;
@@ -298,7 +315,7 @@
         <div class="card-top">
           <span class="page-number-pill">Page ${index + 1}</span>
           <span style="font-size: 0.95rem; color: var(--text-muted); font-weight: 300;">
-            ${displayW} &times; ${displayH} px ${item.scale !== 100 ? `(${item.scale}%)` : ''}
+            ${displayW} &times; ${displayH} px
           </span>
         </div>
         <div class="card-preview-area" title="Drag to reorder">
@@ -326,7 +343,7 @@
               <polyline points="9 18 15 12 9 6"></polyline>
             </svg>
           </button>
-          <button class="card-icon-btn btn-adjust" type="button" title="Adjust Image (Resize, Brightness, Sharpness & Saturation)" aria-label="Adjust image">
+          <button class="card-icon-btn btn-adjust" type="button" title="Crop & Edit Image (Crop, Brightness, Sharpness & Saturation)" aria-label="Crop and edit image">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M12 20h9"></path>
               <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
@@ -493,17 +510,232 @@
   });
 
   // ---------------------------------------------------------------------------
-  // Image Adjustment Modal Logic
+  // Image Adjustment & Crop Modal Logic
   // ---------------------------------------------------------------------------
+  function updateCropBoxDOM() {
+    currentCrop.w = Math.max(0.05, Math.min(1, currentCrop.w));
+    currentCrop.h = Math.max(0.05, Math.min(1, currentCrop.h));
+    currentCrop.x = Math.max(0, Math.min(1 - currentCrop.w, currentCrop.x));
+    currentCrop.y = Math.max(0, Math.min(1 - currentCrop.h, currentCrop.y));
+
+    const leftPct = currentCrop.x * 100;
+    const topPct = currentCrop.y * 100;
+    const widthPct = currentCrop.w * 100;
+    const heightPct = currentCrop.h * 100;
+
+    cropBox.style.left = `${leftPct}%`;
+    cropBox.style.top = `${topPct}%`;
+    cropBox.style.width = `${widthPct}%`;
+    cropBox.style.height = `${heightPct}%`;
+
+    cropBackdropTop.style.cssText = `top: 0; left: 0; width: 100%; height: ${topPct}%;`;
+    cropBackdropBottom.style.cssText = `top: ${topPct + heightPct}%; left: 0; width: 100%; height: ${Math.max(0, 100 - (topPct + heightPct))}%;`;
+    cropBackdropLeft.style.cssText = `top: ${topPct}%; left: 0; width: ${leftPct}%; height: ${heightPct}%;`;
+    cropBackdropRight.style.cssText = `top: ${topPct}%; left: ${leftPct + widthPct}%; width: ${Math.max(0, 100 - (leftPct + widthPct))}%; height: ${heightPct}%;`;
+
+    const item = images[currentAdjustIndex];
+    if (item) {
+      const origW = item.originalWidth || item.width;
+      const origH = item.originalHeight || item.height;
+      const cropW = Math.round(currentCrop.w * origW);
+      const cropH = Math.round(currentCrop.h * origH);
+      const isFull = currentCrop.x < 0.01 && currentCrop.y < 0.01 && currentCrop.w > 0.98 && currentCrop.h > 0.98;
+      cropSizeBadge.textContent = isFull ? `${cropW} × ${cropH} px (Full)` : `${cropW} × ${cropH} px`;
+    }
+  }
+
+  function applyRatioPreset(ratioStr) {
+    activeRatio = ratioStr;
+    cropPresetBtns.forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.ratio === ratioStr);
+    });
+
+    if (ratioStr === 'free') {
+      return;
+    }
+
+    const item = images[currentAdjustIndex];
+    if (!item) return;
+
+    const origW = item.originalWidth || item.width;
+    const origH = item.originalHeight || item.height;
+
+    const parts = ratioStr.split(':').map(Number);
+    const targetRatio = parts[0] / parts[1]; // w / h in pixels
+    const normRatio = targetRatio * (origH / origW); // ratio in normalized 0..1 space
+
+    let newW, newH;
+    if (normRatio <= 1) {
+      newH = 1;
+      newW = normRatio;
+    } else {
+      newW = 1;
+      newH = 1 / normRatio;
+    }
+
+    currentCrop = {
+      x: (1 - newW) / 2,
+      y: (1 - newH) / 2,
+      w: newW,
+      h: newH
+    };
+
+    updateCropBoxDOM();
+  }
+
+  // Pointer & Touch drag interactions on Crop overlay
+  cropOverlay.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    const handleEl = e.target.closest('.crop-handle');
+    if (handleEl) {
+      activeHandle = handleEl.dataset.handle;
+    } else if (e.target.closest('#cropBox')) {
+      activeHandle = 'box';
+    } else {
+      // Clicked on backdrop outside: reposition crop box centered on click
+      const rect = cropOverlay.getBoundingClientRect();
+      if (rect.width > 0 && rect.height > 0) {
+        const clickX = (e.clientX - rect.left) / rect.width;
+        const clickY = (e.clientY - rect.top) / rect.height;
+        const initSize = 0.45;
+        currentCrop = {
+          x: Math.max(0, Math.min(1 - initSize, clickX - initSize / 2)),
+          y: Math.max(0, Math.min(1 - initSize, clickY - initSize / 2)),
+          w: initSize,
+          h: initSize
+        };
+        updateCropBoxDOM();
+        activeHandle = 'se';
+      }
+    }
+
+    isDraggingCrop = true;
+    dragStartPointer = { x: e.clientX, y: e.clientY };
+    dragStartCrop = { ...currentCrop };
+    try {
+      cropOverlay.setPointerCapture(e.pointerId);
+    } catch (err) {}
+  });
+
+  cropOverlay.addEventListener('pointermove', (e) => {
+    if (!isDraggingCrop || !activeHandle) return;
+    const rect = cropOverlay.getBoundingClientRect();
+    if (rect.width <= 0 || rect.height <= 0) return;
+
+    const dx = (e.clientX - dragStartPointer.x) / rect.width;
+    const dy = (e.clientY - dragStartPointer.y) / rect.height;
+
+    const minW = Math.max(0.05, 30 / rect.width);
+    const minH = Math.max(0.05, 30 / rect.height);
+
+    if (activeHandle === 'box') {
+      const maxX = 1 - dragStartCrop.w;
+      const maxY = 1 - dragStartCrop.h;
+      currentCrop.x = Math.max(0, Math.min(maxX, dragStartCrop.x + dx));
+      currentCrop.y = Math.max(0, Math.min(maxY, dragStartCrop.y + dy));
+      currentCrop.w = dragStartCrop.w;
+      currentCrop.h = dragStartCrop.h;
+    } else {
+      let x1 = dragStartCrop.x;
+      let y1 = dragStartCrop.y;
+      let x2 = dragStartCrop.x + dragStartCrop.w;
+      let y2 = dragStartCrop.y + dragStartCrop.h;
+
+      if (activeHandle.includes('w')) {
+        x1 = Math.min(x2 - minW, Math.max(0, dragStartCrop.x + dx));
+      }
+      if (activeHandle.includes('e')) {
+        x2 = Math.max(x1 + minW, Math.min(1, dragStartCrop.x + dragStartCrop.w + dx));
+      }
+      if (activeHandle.includes('n')) {
+        y1 = Math.min(y2 - minH, Math.max(0, dragStartCrop.y + dy));
+      }
+      if (activeHandle.includes('s')) {
+        y2 = Math.max(y1 + minH, Math.min(1, dragStartCrop.y + dragStartCrop.h + dy));
+      }
+
+      let newW = x2 - x1;
+      let newH = y2 - y1;
+
+      // Maintain locked aspect ratio if selected
+      if (activeRatio !== 'free') {
+        const item = images[currentAdjustIndex];
+        if (item) {
+          const origW = item.originalWidth || item.width;
+          const origH = item.originalHeight || item.height;
+          const parts = activeRatio.split(':').map(Number);
+          const targetRatio = parts[0] / parts[1];
+          const normRatio = targetRatio * (origH / origW);
+
+          if (activeHandle === 'n' || activeHandle === 's') {
+            newW = Math.min(1 - x1, newH * normRatio);
+          } else {
+            newH = Math.min(1 - y1, newW / normRatio);
+            newW = newH * normRatio;
+          }
+        }
+      }
+
+      currentCrop = {
+        x: x1,
+        y: y1,
+        w: Math.max(minW, Math.min(1 - x1, newW)),
+        h: Math.max(minH, Math.min(1 - y1, newH))
+      };
+    }
+
+    updateCropBoxDOM();
+  });
+
+  const stopCropDrag = (e) => {
+    if (isDraggingCrop) {
+      isDraggingCrop = false;
+      activeHandle = null;
+      try {
+        if (e && e.pointerId && cropOverlay.hasPointerCapture(e.pointerId)) {
+          cropOverlay.releasePointerCapture(e.pointerId);
+        }
+      } catch (err) {}
+    }
+  };
+
+  cropOverlay.addEventListener('pointerup', stopCropDrag);
+  cropOverlay.addEventListener('pointercancel', stopCropDrag);
+
+  cropResetBtn.addEventListener('click', () => {
+    currentCrop = { x: 0, y: 0, w: 1, h: 1 };
+    activeRatio = 'free';
+    cropPresetBtns.forEach(btn => btn.classList.toggle('active', btn.dataset.ratio === 'free'));
+    updateCropBoxDOM();
+    showToast('Reset crop to full image');
+  });
+
+  cropPresetBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      applyRatioPreset(btn.dataset.ratio);
+    });
+  });
+
   function openAdjustModal(index) {
     currentAdjustIndex = index;
     const item = images[index];
     if (!item) return;
 
-    adjustModalTitle.textContent = `Adjust Page ${index + 1}`;
-    adjustPreviewImg.src = item.dataUrl;
+    adjustModalTitle.textContent = `Crop & Edit Page ${index + 1}`;
+    
+    // Always use originalDataUrl so user can re-crop without generational degradation
+    const previewSrc = item.originalDataUrl || item.dataUrl;
+    adjustPreviewImg.src = previewSrc;
 
-    adjustScaleSlider.value = item.scale !== undefined ? item.scale : 100;
+    if (item.crop) {
+      currentCrop = { ...item.crop };
+    } else {
+      currentCrop = { x: 0, y: 0, w: 1, h: 1 };
+    }
+
+    activeRatio = 'free';
+    cropPresetBtns.forEach(btn => btn.classList.toggle('active', btn.dataset.ratio === 'free'));
+
     adjustBrightnessSlider.value = item.brightness !== undefined ? item.brightness : 100;
     adjustSharpnessSlider.value = item.sharpness !== undefined ? item.sharpness : 0;
     adjustSaturationSlider.value = item.saturation !== undefined ? item.saturation : 100;
@@ -512,69 +744,118 @@
     updateAdjustPreview();
     adjustModal.style.display = 'flex';
     document.body.style.overflow = 'hidden';
+
+    // Position crop box once image layout is ready
+    if (adjustPreviewImg.complete && adjustPreviewImg.naturalWidth > 0) {
+      updateCropBoxDOM();
+    } else {
+      adjustPreviewImg.onload = () => updateCropBoxDOM();
+    }
   }
 
   function updateAdjustPreview() {
-    const scale = parseInt(adjustScaleSlider.value, 10);
     const brightness = parseInt(adjustBrightnessSlider.value, 10);
     const sharpness = parseInt(adjustSharpnessSlider.value, 10);
     const saturation = parseInt(adjustSaturationSlider.value, 10);
 
-    adjustScaleVal.textContent = `${scale}%`;
     adjustBrightnessVal.textContent = `${brightness}%`;
     adjustSharpnessVal.textContent = `${sharpness}%`;
     adjustSaturationVal.textContent = `${saturation}%`;
-
-    const item = images[currentAdjustIndex];
-    if (item) {
-      const calcW = Math.round(item.width * (scale / 100));
-      const calcH = Math.round(item.height * (scale / 100));
-      adjustDimText.textContent = `Output Size: ${calcW} × ${calcH} px (${scale}%)`;
-    }
 
     const contrastVal = 100 + sharpness * 0.4;
     adjustPreviewImg.style.filter = `brightness(${brightness}%) saturate(${saturation}%) contrast(${contrastVal}%)`;
   }
 
-  [adjustScaleSlider, adjustBrightnessSlider, adjustSharpnessSlider, adjustSaturationSlider].forEach(slider => {
+  [adjustBrightnessSlider, adjustSharpnessSlider, adjustSaturationSlider].forEach(slider => {
     slider.addEventListener('input', updateAdjustPreview);
   });
 
   adjustResetBtn.addEventListener('click', () => {
-    adjustScaleSlider.value = 100;
     adjustBrightnessSlider.value = 100;
     adjustSharpnessSlider.value = 0;
     adjustSaturationSlider.value = 100;
+    currentCrop = { x: 0, y: 0, w: 1, h: 1 };
+    activeRatio = 'free';
+    cropPresetBtns.forEach(btn => btn.classList.toggle('active', btn.dataset.ratio === 'free'));
     updateAdjustPreview();
+    updateCropBoxDOM();
     showToast('Reset settings to original');
   });
 
-  adjustSaveBtn.addEventListener('click', () => {
+  function cropImageCanvas(originalSrc, crop, naturalW, naturalH) {
+    return new Promise((resolve) => {
+      const isFull = !crop || (crop.x < 0.005 && crop.y < 0.005 && crop.w > 0.995 && crop.h > 0.995);
+      const img = new Image();
+      img.onload = () => {
+        if (isFull) {
+          resolve({
+            dataUrl: originalSrc,
+            width: naturalW,
+            height: naturalH
+          });
+          return;
+        }
+
+        const sx = Math.max(0, Math.round(crop.x * naturalW));
+        const sy = Math.max(0, Math.round(crop.y * naturalH));
+        const sw = Math.min(naturalW - sx, Math.max(1, Math.round(crop.w * naturalW)));
+        const sh = Math.min(naturalH - sy, Math.max(1, Math.round(crop.h * naturalH)));
+
+        const canvas = document.createElement('canvas');
+        canvas.width = sw;
+        canvas.height = sh;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, sx, sy, sw, sh, 0, 0, sw, sh);
+
+        resolve({
+          dataUrl: canvas.toDataURL('image/jpeg', 0.96),
+          width: sw,
+          height: sh
+        });
+      };
+      img.src = originalSrc;
+    });
+  }
+
+  adjustSaveBtn.addEventListener('click', async () => {
     if (currentAdjustIndex === null || !images[currentAdjustIndex]) {
       closeAdjustModal();
       return;
     }
 
-    const newScale = parseInt(adjustScaleSlider.value, 10);
     const newBrightness = parseInt(adjustBrightnessSlider.value, 10);
     const newSharpness = parseInt(adjustSharpnessSlider.value, 10);
     const newSaturation = parseInt(adjustSaturationSlider.value, 10);
     const applyToAll = adjustApplyToAll.checked;
 
+    const item = images[currentAdjustIndex];
+    const origSrc = item.originalDataUrl || item.dataUrl;
+    const origW = item.originalWidth || item.width;
+    const origH = item.originalHeight || item.height;
+
+    // Apply crop to current image
+    const croppedResult = await cropImageCanvas(origSrc, currentCrop, origW, origH);
+    item.dataUrl = croppedResult.dataUrl;
+    item.width = croppedResult.width;
+    item.height = croppedResult.height;
+    item.crop = (currentCrop.x < 0.005 && currentCrop.y < 0.005 && currentCrop.w > 0.995 && currentCrop.h > 0.995) 
+      ? null 
+      : { ...currentCrop };
+
+    item.brightness = newBrightness;
+    item.sharpness = newSharpness;
+    item.saturation = newSaturation;
+
     if (applyToAll) {
-      images.forEach(item => {
-        item.scale = newScale;
-        item.brightness = newBrightness;
-        item.sharpness = newSharpness;
-        item.saturation = newSaturation;
+      images.forEach((other, idx) => {
+        if (idx !== currentAdjustIndex) {
+          other.brightness = newBrightness;
+          other.sharpness = newSharpness;
+          other.saturation = newSaturation;
+        }
       });
-      showToast('Applied adjustments to all pages');
+      showToast('Cropped image & applied filters to all pages');
     } else {
-      const item = images[currentAdjustIndex];
-      item.scale = newScale;
-      item.brightness = newBrightness;
-      item.sharpness = newSharpness;
-      item.saturation = newSaturation;
       showToast(`Updated Page ${currentAdjustIndex + 1}`);
     }
 
@@ -629,7 +910,6 @@
   // ---------------------------------------------------------------------------
   function getProcessedImage(item) {
     return new Promise((resolve) => {
-      const scaleFactor = (item.scale !== undefined ? item.scale : 100) / 100;
       const brightness = item.brightness !== undefined ? item.brightness : 100;
       const saturation = item.saturation !== undefined ? item.saturation : 100;
       const sharpness = item.sharpness !== undefined ? item.sharpness : 0;
@@ -645,9 +925,8 @@
         const baseW = isSwapped ? img.naturalHeight : img.naturalWidth;
         const baseH = isSwapped ? img.naturalWidth : img.naturalHeight;
 
-        // Apply scale factor to output canvas size
-        canvas.width = Math.max(1, Math.round(baseW * scaleFactor));
-        canvas.height = Math.max(1, Math.round(baseH * scaleFactor));
+        canvas.width = Math.max(1, baseW);
+        canvas.height = Math.max(1, baseH);
 
         // Apply brightness, saturation, and base contrast
         ctx.filter = `brightness(${brightness}%) saturate(${saturation}%) contrast(${contrastVal}%)`;
@@ -655,8 +934,8 @@
         ctx.translate(canvas.width / 2, canvas.height / 2);
         ctx.rotate(rads);
         
-        const drawW = img.naturalWidth * scaleFactor;
-        const drawH = img.naturalHeight * scaleFactor;
+        const drawW = img.naturalWidth;
+        const drawH = img.naturalHeight;
         ctx.drawImage(img, -drawW / 2, -drawH / 2, drawW, drawH);
 
         // Reset filter
@@ -808,7 +1087,7 @@
 
       for (let i = 0; i < images.length; i++) {
         const item = images[i];
-        const processed = await getRenderedImageBlob(item);
+        const processed = await getProcessedImage(item);
 
         let orientation = userOrientation;
         if (orientation === 'auto') {
