@@ -1183,21 +1183,25 @@
   syncLayoutOptions();
   window.addEventListener('pageshow', syncLayoutOptions);
 
-  // Fluid Jelly Button Click Physics
-  document.addEventListener('pointerdown', (e) => {
-    const btn = e.target.closest('.btn-clean, .card-icon-btn, .crop-preset-btn, .add-page-card');
-    if (btn && !btn.disabled) {
-      btn.classList.remove('is-jelly-active');
-      void btn.offsetWidth; // Reflow to guarantee instant restart
-      btn.classList.add('is-jelly-active');
-    }
-  });
+  // Fluid Jelly Button Click Physics (Desktop / Fine Pointer only; mobile uses instant CSS active scale)
+  const isFinePointer = window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  if (isFinePointer) {
+    document.addEventListener('pointerdown', (e) => {
+      const btn = e.target.closest('.btn-clean, .card-icon-btn, .crop-preset-btn, .add-page-card');
+      if (btn && !btn.disabled) {
+        btn.classList.remove('is-jelly-active');
+        requestAnimationFrame(() => {
+          btn.classList.add('is-jelly-active');
+        });
+      }
+    });
 
-  document.addEventListener('animationend', (e) => {
-    if (e.target.classList && e.target.classList.contains('is-jelly-active')) {
-      e.target.classList.remove('is-jelly-active');
-    }
-  });
+    document.addEventListener('animationend', (e) => {
+      if (e.target.classList && e.target.classList.contains('is-jelly-active')) {
+        e.target.classList.remove('is-jelly-active');
+      }
+    });
+  }
 
   // Initial setup
   renderPages();

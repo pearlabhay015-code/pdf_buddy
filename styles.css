@@ -98,6 +98,7 @@ body {
   filter: blur(80px);
   opacity: 0.55;
   animation: float-liquid-orb 20s ease-in-out infinite alternate;
+  will-change: transform;
 }
 
 .orb-cyan {
@@ -198,8 +199,10 @@ body {
   transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.app-logo-svg:hover {
-  transform: scale(1.03);
+@media (hover: hover) and (pointer: fine) {
+  .app-logo-svg:hover {
+    transform: scale(1.03);
+  }
 }
 
 /* Fluid Thin Subtitle */
@@ -338,13 +341,15 @@ body {
   max-width: 100%;
 }
 
-.option-pill:hover {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.88) 0%, rgba(255, 255, 255, 0.55) 100%);
-  border-color: rgba(255, 255, 255, 0.95);
-  transform: translateY(-2px);
-  box-shadow: 
-    inset 0 2px 1.5px 0 rgba(255, 255, 255, 1),
-    0 18px 40px -8px rgba(100, 116, 139, 0.18);
+@media (hover: hover) and (pointer: fine) {
+  .option-pill:hover {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.88) 0%, rgba(255, 255, 255, 0.55) 100%);
+    border-color: rgba(255, 255, 255, 0.95);
+    transform: translateY(-2px);
+    box-shadow: 
+      inset 0 2px 1.5px 0 rgba(255, 255, 255, 1),
+      0 18px 40px -8px rgba(100, 116, 139, 0.18);
+  }
 }
 
 .option-title {
@@ -416,14 +421,16 @@ body {
   border-radius: clamp(24px, 4vw, 36px) clamp(24px, 4vw, 36px) 0 0;
 }
 
-.visible-paste-canvas:hover {
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.5) 100%);
-  transform: translateY(-2px);
-  box-shadow: 
-    inset 0 2px 2px 0 rgba(255, 255, 255, 1),
-    inset 0 -2px 4px 0 rgba(255, 255, 255, 0.4),
-    0 30px 70px -15px rgba(14, 165, 233, 0.18),
-    0 12px 28px -6px rgba(100, 116, 139, 0.12);
+@media (hover: hover) and (pointer: fine) {
+  .visible-paste-canvas:hover {
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.5) 100%);
+    transform: translateY(-2px);
+    box-shadow: 
+      inset 0 2px 2px 0 rgba(255, 255, 255, 1),
+      inset 0 -2px 4px 0 rgba(255, 255, 255, 0.4),
+      0 30px 70px -15px rgba(14, 165, 233, 0.18),
+      0 12px 28px -6px rgba(100, 116, 139, 0.12);
+  }
 }
 
 .visible-paste-canvas:focus-visible {
@@ -499,12 +506,14 @@ body {
   pointer-events: none;
 }
 
-.visible-paste-canvas:hover .dropzone-icon {
-  transform: scale(1.08);
-  box-shadow: 
-    inset 0 2px 2px 0 rgba(255, 255, 255, 1),
-    0 20px 42px -6px rgba(245, 158, 11, 0.6),
-    0 8px 18px rgba(245, 158, 11, 0.32);
+@media (hover: hover) and (pointer: fine) {
+  .visible-paste-canvas:hover .dropzone-icon {
+    transform: scale(1.08);
+    box-shadow: 
+      inset 0 2px 2px 0 rgba(255, 255, 255, 1),
+      0 20px 42px -6px rgba(245, 158, 11, 0.6),
+      0 8px 18px rgba(245, 158, 11, 0.32);
+  }
 }
 
 .dropzone-main-text {
@@ -622,7 +631,16 @@ body {
   pointer-events: none;
 }
 
-.add-page-card:hover,
+@media (hover: hover) and (pointer: fine) {
+  .add-page-card:hover {
+    background: linear-gradient(145deg, rgba(167, 243, 208, 0.78) 0%, rgba(209, 250, 229, 0.52) 100%);
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 
+      inset 0 2px 2px 0 rgba(255, 255, 255, 1),
+      0 24px 50px -10px rgba(16, 185, 129, 0.28);
+  }
+}
+
 .add-page-card:focus-visible {
   background: linear-gradient(145deg, rgba(167, 243, 208, 0.78) 0%, rgba(209, 250, 229, 0.52) 100%);
   transform: translateY(-4px) scale(1.02);
@@ -666,9 +684,11 @@ body {
   transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease;
 }
 
-.add-page-card:hover .add-card-icon {
-  transform: scale(1.12);
-  box-shadow: 0 12px 28px rgba(16, 185, 129, 0.5);
+@media (hover: hover) and (pointer: fine) {
+  .add-page-card:hover .add-card-icon {
+    transform: scale(1.12);
+    box-shadow: 0 12px 28px rgba(16, 185, 129, 0.5);
+  }
 }
 
 .add-card-label {
@@ -707,6 +727,7 @@ body {
   width: 100%;
   touch-action: pan-y;
   will-change: transform;
+  contain: layout style;
   transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
 
@@ -723,16 +744,18 @@ body {
   pointer-events: none;
 }
 
-body:not(.is-sorting-active) .clean-page-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 
-    inset 0 2px 2px 0 rgba(255, 255, 255, 1),
-    0 24px 50px -10px rgba(14, 165, 233, 0.2),
-    0 10px 20px -4px rgba(100, 116, 139, 0.12);
-  border-color: rgba(255, 255, 255, 0.95);
+@media (hover: hover) and (pointer: fine) {
+  body:not(.is-sorting-active) .clean-page-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 
+      inset 0 2px 2px 0 rgba(255, 255, 255, 1),
+      0 24px 50px -10px rgba(14, 165, 233, 0.2),
+      0 10px 20px -4px rgba(100, 116, 139, 0.12);
+    border-color: rgba(255, 255, 255, 0.95);
+  }
 }
 
-/* While reorder drag is active: kill transform transitions for instant 60/120 FPS response */
+/* While reorder drag is active: kill transform transitions & backdrop-filter for instant 60/120 FPS response */
 body.is-sorting-active,
 body.is-sorting-active * {
   user-select: none !important;
@@ -742,6 +765,9 @@ body.is-sorting-active * {
 body.is-sorting-active .clean-page-card {
   transition: none !important;
   cursor: grabbing !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background: rgba(255, 255, 255, 0.94) !important;
 }
 
 .card-top {
@@ -917,15 +943,6 @@ body.is-sorting-active .clean-page-card {
     0 6px 18px rgba(2, 132, 199, 0.42);
 }
 
-.card-icon-btn.btn-move-prev:hover:not(:disabled),
-.card-icon-btn.btn-move-next:hover:not(:disabled) {
-  background: linear-gradient(135deg, rgba(3, 105, 161, 0.95) 0%, rgba(2, 132, 199, 0.85) 100%);
-  transform: translateY(-2px) scale(1.12);
-  box-shadow: 
-    inset 0 2px 1.5px rgba(255, 255, 255, 1),
-    0 10px 24px rgba(2, 132, 199, 0.55);
-}
-
 /* Image Edit & Crop - Liquid Sunny Amber Glass Droplet */
 .card-icon-btn.btn-adjust {
   background: linear-gradient(135deg, rgba(245, 158, 11, 0.92) 0%, rgba(251, 191, 36, 0.78) 100%);
@@ -934,14 +951,6 @@ body.is-sorting-active .clean-page-card {
     inset 0 1.5px 1px rgba(255, 255, 255, 0.9),
     inset 0 -2px 3px rgba(217, 119, 6, 0.55),
     0 6px 18px rgba(245, 158, 11, 0.42);
-}
-
-.card-icon-btn.btn-adjust:hover:not(:disabled) {
-  background: linear-gradient(135deg, rgba(217, 119, 6, 0.95) 0%, rgba(245, 158, 11, 0.85) 100%);
-  transform: translateY(-2px) scale(1.12);
-  box-shadow: 
-    inset 0 2px 1.5px rgba(255, 255, 255, 1),
-    0 10px 24px rgba(245, 158, 11, 0.55);
 }
 
 /* Image Rotate - Liquid Emerald Glass Droplet */
@@ -954,14 +963,6 @@ body.is-sorting-active .clean-page-card {
     0 6px 18px rgba(16, 185, 129, 0.42);
 }
 
-.card-icon-btn.btn-rotate:hover:not(:disabled) {
-  background: linear-gradient(135deg, rgba(5, 150, 105, 0.95) 0%, rgba(16, 185, 129, 0.85) 100%);
-  transform: translateY(-2px) scale(1.12);
-  box-shadow: 
-    inset 0 2px 1.5px rgba(255, 255, 255, 1),
-    0 10px 24px rgba(16, 185, 129, 0.55);
-}
-
 /* Remove Page - Liquid Coral Ruby Glass Droplet */
 .card-icon-btn.btn-danger {
   background: linear-gradient(135deg, rgba(239, 68, 68, 0.9) 0%, rgba(248, 113, 113, 0.78) 100%);
@@ -972,12 +973,39 @@ body.is-sorting-active .clean-page-card {
     0 6px 18px rgba(239, 68, 68, 0.42);
 }
 
-.card-icon-btn.btn-danger:hover:not(:disabled) {
-  background: linear-gradient(135deg, rgba(220, 38, 38, 0.95) 0%, rgba(239, 68, 68, 0.85) 100%);
-  transform: translateY(-2px) scale(1.12);
-  box-shadow: 
-    inset 0 2px 1.5px rgba(255, 255, 255, 1),
-    0 10px 24px rgba(239, 68, 68, 0.55);
+@media (hover: hover) and (pointer: fine) {
+  .card-icon-btn.btn-move-prev:hover:not(:disabled),
+  .card-icon-btn.btn-move-next:hover:not(:disabled) {
+    background: linear-gradient(135deg, rgba(3, 105, 161, 0.95) 0%, rgba(2, 132, 199, 0.85) 100%);
+    transform: translateY(-2px) scale(1.12);
+    box-shadow: 
+      inset 0 2px 1.5px rgba(255, 255, 255, 1),
+      0 10px 24px rgba(2, 132, 199, 0.55);
+  }
+
+  .card-icon-btn.btn-adjust:hover:not(:disabled) {
+    background: linear-gradient(135deg, rgba(217, 119, 6, 0.95) 0%, rgba(245, 158, 11, 0.85) 100%);
+    transform: translateY(-2px) scale(1.12);
+    box-shadow: 
+      inset 0 2px 1.5px rgba(255, 255, 255, 1),
+      0 10px 24px rgba(245, 158, 11, 0.55);
+  }
+
+  .card-icon-btn.btn-rotate:hover:not(:disabled) {
+    background: linear-gradient(135deg, rgba(5, 150, 105, 0.95) 0%, rgba(16, 185, 129, 0.85) 100%);
+    transform: translateY(-2px) scale(1.12);
+    box-shadow: 
+      inset 0 2px 1.5px rgba(255, 255, 255, 1),
+      0 10px 24px rgba(16, 185, 129, 0.55);
+  }
+
+  .card-icon-btn.btn-danger:hover:not(:disabled) {
+    background: linear-gradient(135deg, rgba(220, 38, 38, 0.95) 0%, rgba(239, 68, 68, 0.85) 100%);
+    transform: translateY(-2px) scale(1.12);
+    box-shadow: 
+      inset 0 2px 1.5px rgba(255, 255, 255, 1),
+      0 10px 24px rgba(239, 68, 68, 0.55);
+  }
 }
 
 .card-icon-btn:disabled {
@@ -1074,16 +1102,6 @@ body.is-sorting-active .clean-page-card {
   text-shadow: 0 1px 2px rgba(2, 132, 199, 0.5);
 }
 
-.btn-accent:hover:not(:disabled) {
-  background: linear-gradient(135deg, rgba(3, 105, 161, 0.95) 0%, rgba(2, 132, 199, 0.85) 100%) !important;
-  transform: translateY(-2px) scale(1.025);
-  box-shadow: 
-    inset 0 2px 1.5px 0 rgba(255, 255, 255, 1),
-    inset 0 -2px 4px 0 rgba(3, 105, 161, 0.65),
-    0 18px 42px -6px rgba(2, 132, 199, 0.6),
-    0 8px 18px rgba(2, 132, 199, 0.32) !important;
-}
-
 /* "Preview PDF" - Luminous Liquid Emerald Glass */
 .btn-light,
 .btn-light:disabled {
@@ -1096,16 +1114,6 @@ body.is-sorting-active .clean-page-card {
     0 14px 34px -6px rgba(16, 185, 129, 0.48),
     0 6px 14px rgba(16, 185, 129, 0.25) !important;
   text-shadow: 0 1px 2px rgba(5, 150, 105, 0.5);
-}
-
-.btn-light:hover:not(:disabled) {
-  background: linear-gradient(135deg, rgba(5, 150, 105, 0.95) 0%, rgba(16, 185, 129, 0.85) 100%) !important;
-  transform: translateY(-2px) scale(1.025);
-  box-shadow: 
-    inset 0 2px 1.5px 0 rgba(255, 255, 255, 1),
-    inset 0 -2px 4px 0 rgba(4, 120, 87, 0.65),
-    0 18px 42px -6px rgba(16, 185, 129, 0.6),
-    0 8px 18px rgba(16, 185, 129, 0.32) !important;
 }
 
 /* "Remove All" - Translucent Frosted Rose Glass (Soft before hover, Vivid glowing red on hover) */
@@ -1124,17 +1132,39 @@ body.is-sorting-active .clean-page-card {
   -webkit-backdrop-filter: blur(14px) saturate(180%);
 }
 
-.btn-text-danger:hover:not(:disabled) {
-  background: linear-gradient(135deg, rgba(239, 68, 68, 0.92) 0%, rgba(248, 113, 113, 0.78) 100%) !important;
-  color: #ffffff !important;
-  border-color: rgba(255, 255, 255, 0.88) !important;
-  transform: translateY(-2px) scale(1.025);
-  box-shadow: 
-    inset 0 2px 1.5px 0 rgba(255, 255, 255, 0.95),
-    inset 0 -2px 4px 0 rgba(220, 38, 38, 0.6),
-    0 18px 38px -6px rgba(239, 68, 68, 0.52),
-    0 6px 14px rgba(239, 68, 68, 0.3) !important;
-  text-shadow: 0 1px 2px rgba(220, 38, 38, 0.6);
+@media (hover: hover) and (pointer: fine) {
+  .btn-accent:hover:not(:disabled) {
+    background: linear-gradient(135deg, rgba(3, 105, 161, 0.95) 0%, rgba(2, 132, 199, 0.85) 100%) !important;
+    transform: translateY(-2px) scale(1.025);
+    box-shadow: 
+      inset 0 2px 1.5px 0 rgba(255, 255, 255, 1),
+      inset 0 -2px 4px 0 rgba(3, 105, 161, 0.65),
+      0 18px 42px -6px rgba(2, 132, 199, 0.6),
+      0 8px 18px rgba(2, 132, 199, 0.32) !important;
+  }
+
+  .btn-light:hover:not(:disabled) {
+    background: linear-gradient(135deg, rgba(5, 150, 105, 0.95) 0%, rgba(16, 185, 129, 0.85) 100%) !important;
+    transform: translateY(-2px) scale(1.025);
+    box-shadow: 
+      inset 0 2px 1.5px 0 rgba(255, 255, 255, 1),
+      inset 0 -2px 4px 0 rgba(4, 120, 87, 0.65),
+      0 18px 42px -6px rgba(16, 185, 129, 0.6),
+      0 8px 18px rgba(16, 185, 129, 0.32) !important;
+  }
+
+  .btn-text-danger:hover:not(:disabled) {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.92) 0%, rgba(248, 113, 113, 0.78) 100%) !important;
+    color: #ffffff !important;
+    border-color: rgba(255, 255, 255, 0.88) !important;
+    transform: translateY(-2px) scale(1.025);
+    box-shadow: 
+      inset 0 2px 1.5px 0 rgba(255, 255, 255, 0.95),
+      inset 0 -2px 4px 0 rgba(220, 38, 38, 0.6),
+      0 18px 38px -6px rgba(239, 68, 68, 0.52),
+      0 6px 14px rgba(239, 68, 68, 0.3) !important;
+    text-shadow: 0 1px 2px rgba(220, 38, 38, 0.6);
+  }
 }
 
 .btn-text-danger:disabled {
@@ -1253,10 +1283,12 @@ body.is-sorting-active .clean-page-card {
   transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.modal-close-btn:hover:not(:disabled) {
-  background: rgba(226, 232, 240, 0.9);
-  color: #0f172a;
-  transform: scale(1.08);
+@media (hover: hover) and (pointer: fine) {
+  .modal-close-btn:hover:not(:disabled) {
+    background: rgba(226, 232, 240, 0.9);
+    color: #0f172a;
+    transform: scale(1.08);
+  }
 }
 
 .modal-close-btn:active:not(:disabled) {
@@ -1461,10 +1493,12 @@ body.is-sorting-active .clean-page-card {
   transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.crop-preset-btn:hover {
-  background: rgba(255, 255, 255, 0.9);
-  color: #0284c7;
-  transform: translateY(-1px) scale(1.05);
+@media (hover: hover) and (pointer: fine) {
+  .crop-preset-btn:hover {
+    background: rgba(255, 255, 255, 0.9);
+    color: #0284c7;
+    transform: translateY(-1px) scale(1.05);
+  }
 }
 
 .crop-preset-btn.active {
@@ -1485,8 +1519,10 @@ body.is-sorting-active .clean-page-card {
     0 4px 12px rgba(245, 158, 11, 0.35);
 }
 
-.crop-preset-btn.btn-crop-reset:hover {
-  background: linear-gradient(135deg, rgba(217, 119, 6, 0.95) 0%, rgba(245, 158, 11, 0.85) 100%);
+@media (hover: hover) and (pointer: fine) {
+  .crop-preset-btn.btn-crop-reset:hover {
+    background: linear-gradient(135deg, rgba(217, 119, 6, 0.95) 0%, rgba(245, 158, 11, 0.85) 100%);
+  }
 }
 
 .crop-preset-btn:active,
@@ -1770,8 +1806,36 @@ body.is-sorting-active .clean-page-card {
    Responsive Breakpoints & Layout Adaptations
    ========================================================================== */
 
-/* Tablet & Smaller Screens */
+/* Tablet & Smaller Screens / Mobile Performance */
 @media (max-width: 768px) {
+  :root {
+    /* Lighter blur on high-DPI mobile screens: visual parity with 70% less GPU fill rate */
+    --glass-blur: blur(10px) saturate(160%);
+    --glass-blur-heavy: blur(14px) saturate(170%);
+  }
+
+  /* Disable continuous background orb animations on mobile: saves battery and prevents frame drops */
+  .ambient-light-orb {
+    animation: none !important;
+    transform: none !important;
+    will-change: auto !important;
+  }
+
+  /* Replace 5-stage bouncing jelly physics with instant, crisp tactile touch feedback on mobile */
+  .btn-clean:active:not(:disabled),
+  .btn-clean.is-jelly-active,
+  .card-icon-btn:active:not(:disabled),
+  .card-icon-btn.is-jelly-active,
+  .crop-preset-btn:active:not(:disabled),
+  .crop-preset-btn.is-jelly-active,
+  .add-page-card:active,
+  .add-page-card.is-jelly-active,
+  .modal-close-btn:active:not(:disabled) {
+    animation: none !important;
+    transform: scale(0.96) !important;
+    transition: transform 0.08s ease !important;
+  }
+
   .options-strip {
     justify-content: stretch;
   }
@@ -1864,5 +1928,19 @@ body.is-sorting-active .clean-page-card {
   
   .card-top, .card-bottom-bar {
     padding: 8px 10px;
+  }
+}
+
+/* Accessibility & Low-Power Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .ambient-light-orb {
+    animation: none !important;
+    transform: none !important;
   }
 }
