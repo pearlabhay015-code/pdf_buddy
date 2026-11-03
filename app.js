@@ -741,13 +741,28 @@
     adjustModal.style.display = 'flex';
     document.body.style.overflow = 'hidden';
 
-    // Position crop box once image layout is ready
+    // Position crop box with double RAF once modal layout is rendered
+    const syncCrop = () => {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          updateCropBoxDOM();
+        });
+      });
+    };
+
     if (adjustPreviewImg.complete && adjustPreviewImg.naturalWidth > 0) {
-      updateCropBoxDOM();
+      syncCrop();
     } else {
-      adjustPreviewImg.onload = () => updateCropBoxDOM();
+      adjustPreviewImg.onload = () => syncCrop();
     }
   }
+
+  // Recalibrate crop overlay on window resize or mobile orientation change
+  window.addEventListener('resize', () => {
+    if (adjustModal && adjustModal.style.display !== 'none') {
+      updateCropBoxDOM();
+    }
+  });
 
   function updateAdjustPreview() {
     const brightness = parseInt(adjustBrightnessSlider.value, 10);
